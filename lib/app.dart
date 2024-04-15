@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 
+
+import 'pages/login/login.page.dart';
+import 'pages/login/register.page.dart';
+
 import 'pages/home.page.dart';
+
 import 'pages/newgroup.page.dart';
+import 'pages/group/homegroup.page.dart';
+import 'pages/group/configgroup.page.dart';
+
+import 'pages/group/naipe/managnaipe.page.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -11,11 +20,18 @@ class App extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          useMaterial3: false,
-          primarySwatch: getMaterialColor(Color(0xFF191A47))),
+        useMaterial3: false,
+        primarySwatch: getMaterialColor(Color(0xFF191A47)),
+        // colorSchemeSeed: Color(0xFF191A47),
+      ),
       routes: {
+        "/login": (context) => const Login(),
+        "/register": (context) => const Register(),
         "/home": (context) => const HomePage(),
         "/newgroup": (context) => const NewGroup(),
+        "/homegroup": (context) => const HomeGroup(),
+        "/configgroup": (context) => const ConfigGroup(),
+        "/managnaipe": (context) => const ManagNaipe(),
       },
       initialRoute: "/home",
     );

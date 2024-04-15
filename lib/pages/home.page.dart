@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+import '../widgets.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
   void _logout(BuildContext context) {
@@ -22,7 +24,11 @@ class HomePage extends StatelessWidget {
         centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
+        backgroundColor: Colors.white,
+        child: Icon(
+          Icons.add,
+          color: Colors.black,
+        ),
         onPressed: () => Navigator.pushNamed(context, "/newgroup"),
       ),
       body: Container(
@@ -33,26 +39,18 @@ class HomePage extends StatelessWidget {
                 const Color(0xFF1B013D),
               ],
               begin: const FractionalOffset(0.0, 0.0),
-              end: const FractionalOffset(1.0, 0.0),
+              end: const FractionalOffset(0.0, 1.0),
               stops: [0.0, 1.0],
               tileMode: TileMode.clamp),
         ),
         child: ListView(
-          children: const [
-            ListTile(
-              leading: CircleAvatar(),
-              title: Text("Orquestra"),
-              subtitle: Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Icon(Icons.done_all, size: Checkbox.width),
-                  Text(" Victor: Ola"),
-                ],
-              ),
-            ),
+          children: [
+            HomeGroups("Teste", "Orquestra", "Victor", 1),
           ],
         ),
       ),
     );
   }
 }
+
+
