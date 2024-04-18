@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-
 class Login extends StatelessWidget {
   const Login({super.key});
 
@@ -11,28 +8,35 @@ class Login extends StatelessWidget {
       body: Container(
         padding: const EdgeInsets.all(20),
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-              colors: [
-                Color(0xFF233C95),
-                Color(0xFF1B013D),
-              ],
-              begin: FractionalOffset(0.0, 0.0),
-              end: FractionalOffset(0.0, 1.0),
-              stops: [0.0, 1.0],
-              tileMode: TileMode.clamp),
+          image: DecorationImage(
+            image: AssetImage('images/BackgroundInício.png'),
+            fit: BoxFit.fill
+          )
+          // gradient: LinearGradient(
+          //   colors: [
+          //     Color(0xFF233C95),
+          //     Color(0xFF1B013D),
+          //   ],
+          //   begin: FractionalOffset(0.0, 0.0),
+          //   end: FractionalOffset(0.0, 1.0),
+          //   stops: [0.0, 1.0],
+          //   tileMode: TileMode.clamp
+          // ),
         ),
         child: SizedBox(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                margin: const EdgeInsets.only(top: 100),
-                child: const Text(
-                  'LEGATTO',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22
-                  ),
+                margin: const EdgeInsets.only(top: 300),
+                child: 
+                Container(
+                  alignment: Alignment.center,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                    image: AssetImage("images/LegattoLogo2.png"),
+                    fit: BoxFit.fill,
+                  ))
                 ),
               ),
               SizedBox(
@@ -59,7 +63,7 @@ class Login extends StatelessWidget {
                               hintText: "Digite seu email",
                               fillColor: Colors.white,
                               filled: true,
-                              prefixIcon: const Icon(Icons.abc),
+                              prefixIcon: const Icon(Icons.email),
                             ),
                             keyboardType: TextInputType.emailAddress,
                           ),
@@ -86,10 +90,10 @@ class Login extends StatelessWidget {
                               hintText: "Digite sua senha",
                               fillColor: Colors.white,
                               filled: true,
-                              prefixIcon: const Icon(Icons.abc),
+                              prefixIcon: const Icon(Icons.lock),
                               suffixIcon: const TextButton(
                                 onPressed: null,
-                                child: Icon(Icons.password)
+                                child: Icon(Icons.remove_red_eye)
                               )
                             ),
                             obscureText: true,
@@ -122,16 +126,16 @@ class Login extends StatelessWidget {
                     ),
                     Container(
                       margin: const EdgeInsets.only(top: 40),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const Text(
                             'Esqueci minha senha',
                             style: TextStyle(color: Colors.white),
                           ),
                           TextButton(
-                            onPressed: null,
-                            child: Text(
+                            onPressed: () => Navigator.pushNamed(context, '/register'),
+                            child: const Text(
                               'Fazer cadastro',
                               style: TextStyle(color: Colors.white),
                             ),
