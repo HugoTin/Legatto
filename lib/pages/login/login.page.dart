@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   const Login({super.key});
+
+  @override _LoginState createState() => _LoginState();
+
+}
+
+class _LoginState extends State<Login>{
+
+  bool hidePassword = false;
+
+  void _changeVisibility(){ hidePassword = !hidePassword; }
 
   @override
   Widget build(BuildContext context) {
@@ -91,12 +101,15 @@ class Login extends StatelessWidget {
                               fillColor: Colors.white,
                               filled: true,
                               prefixIcon: const Icon(Icons.lock),
-                              suffixIcon: const TextButton(
-                                onPressed: null,
-                                child: Icon(Icons.remove_red_eye)
+                              suffixIcon: IconButton(
+                                onPressed: () => setState(() => _changeVisibility()),
+                                icon: Icon(
+                                  hidePassword ? Icons.visibility : Icons.visibility_off,
+                                ),
+                                padding: const EdgeInsets.only(right: 10),
                               )
                             ),
-                            obscureText: true,
+                            obscureText: !hidePassword,
                           ),
                         )
                       ]
@@ -131,13 +144,19 @@ class Login extends StatelessWidget {
                         children: [
                           const Text(
                             'Esqueci minha senha',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700
+                            ),
                           ),
                           TextButton(
                             onPressed: () => Navigator.pushNamed(context, '/register'),
                             child: const Text(
                               'Fazer cadastro',
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700
+                              ),
                             ),
                           )
                         ],
@@ -160,3 +179,4 @@ class Login extends StatelessWidget {
     );
   }
 }
+

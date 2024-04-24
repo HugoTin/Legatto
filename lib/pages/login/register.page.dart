@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
 
-class Register extends StatelessWidget {
+class Register extends StatefulWidget {
   const Register({super.key});
+
+  @override _RegisterState createState() => _RegisterState();
+
+}
+
+class _RegisterState extends State<Register> {
+
+  bool hidePassword = false;
+  bool hidePasswordAgain = false;
+
+  void _changeVisibility(){ hidePassword = !hidePassword; }
+  void _changeVisibilityAgain(){ hidePasswordAgain = !hidePasswordAgain; }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +41,8 @@ class Register extends StatelessWidget {
                 'CADASTRO',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 22
+                  fontSize: 34,
+                  fontWeight: FontWeight.w900
                 ),
               ),
               SizedBox(
@@ -111,12 +124,15 @@ class Register extends StatelessWidget {
                               fillColor: Colors.white,
                               filled: true,
                               prefixIcon: const Icon(Icons.lock),
-                              suffixIcon: const TextButton(
-                                onPressed: null,
-                                child: Icon(Icons.remove_red_eye)
+                              suffixIcon: IconButton(
+                                onPressed: () => setState(() => _changeVisibility()),
+                                icon: Icon(
+                                  hidePassword ? Icons.visibility : Icons.visibility_off,
+                                ),
+                                padding: const EdgeInsets.only(right: 10),
                               )
                             ),
-                            obscureText: true,
+                            obscureText: !hidePassword,
                           ),
                         )
                       ]
@@ -142,12 +158,15 @@ class Register extends StatelessWidget {
                               fillColor: Colors.white,
                               filled: true,
                               prefixIcon: const Icon(Icons.lock),
-                              suffixIcon: const TextButton(
-                                onPressed: null,
-                                child: Icon(Icons.remove_red_eye)
+                              suffixIcon: IconButton(
+                                onPressed: () => setState(() => _changeVisibilityAgain()),
+                                icon: Icon(
+                                  hidePasswordAgain ? Icons.visibility : Icons.visibility_off,
+                                ),
+                                padding: const EdgeInsets.only(right: 10),
                               )
                             ),
-                            obscureText: true,
+                            obscureText: !hidePasswordAgain,
                           ),
                         )
                       ]
@@ -172,7 +191,8 @@ class Register extends StatelessWidget {
                             'CADASTRAR',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 20
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800
                             ),
                           ),
                         ),
@@ -187,4 +207,6 @@ class Register extends StatelessWidget {
       ),
     );
   }
+
+
 }
