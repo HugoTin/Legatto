@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -12,8 +13,44 @@ class _RegisterState extends State<Register> {
   bool hidePassword = false;
   bool hidePasswordAgain = false;
 
+  final fieldNome = TextEditingController();
+  final fieldEmail = TextEditingController();
+  final fieldSenha = TextEditingController();
+  final fieldConfirmarSenha = TextEditingController();
+
   void _changeVisibility(){ hidePassword = !hidePassword; }
   void _changeVisibilityAgain(){ hidePasswordAgain = !hidePasswordAgain; }
+
+  Future<void> _register(BuildContext context) async {
+
+    try {
+
+      if(fieldSenha.text != fieldConfirmarSenha.text){
+
+        print('Senhas divergentes');
+
+        throw Exception('Confirmação de senha incorreta.');
+
+      }
+
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: fieldEmail.text,
+        password: fieldSenha.text,
+      );
+
+      Navigator.pushReplacementNamed(context, "/home");
+    }
+    on FirebaseAuthException catch (ex) {
+      ScaffoldMessenger
+        .of(context)
+        .showSnackBar(SnackBar(
+          content: Text(ex.message!),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+          ),
+        );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -187,14 +224,17 @@ class _RegisterState extends State<Register> {
                               color: Colors.white,
                             )
                           ),
-                          child: const Text(
-                            'CADASTRAR',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w800
+                          child: TextButton(
+                            child: const Text(
+                              'CADASTRAR',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w800
+                              ),
                             ),
-                          ),
+                            onPressed: () => _register(context),
+                          ) 
                         ),
                       ),
                     ),

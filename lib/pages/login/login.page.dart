@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 class Login extends StatefulWidget {
   const Login({super.key});
 
@@ -10,7 +11,32 @@ class _LoginState extends State<Login>{
 
   bool hidePassword = false;
 
+  final fieldEmail = TextEditingController();
+  final fieldPassword = TextEditingController();
+
   void _changeVisibility(){ hidePassword = !hidePassword; }
+
+  void _signIn(BuildContext context) async {
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: fieldEmail.text,
+        password: fieldPassword.text,
+      );
+
+      Navigator.pushReplacementNamed(context, "/home");
+    }
+    on FirebaseAuthException catch (ex) {
+      ScaffoldMessenger
+        .of(context)
+        .showSnackBar(SnackBar(
+          content: Text(ex.message!),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+          ),
+        );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +101,7 @@ class _LoginState extends State<Login>{
                               filled: true,
                               prefixIcon: const Icon(Icons.email),
                             ),
+                            controller: fieldEmail,
                             keyboardType: TextInputType.emailAddress,
                           ),
                         )
@@ -109,6 +136,7 @@ class _LoginState extends State<Login>{
                                 padding: const EdgeInsets.only(right: 10),
                               )
                             ),
+                            controller: fieldPassword,
                             obscureText: !hidePassword,
                           ),
                         )
@@ -128,12 +156,15 @@ class _LoginState extends State<Login>{
                             color: Colors.white,
                           )
                         ),
-                        child: const Text(
-                          'ENTRAR',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20
+                        child: TextButton(
+                          child: const Text(
+                            'ENTRAR',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20
+                            ),
                           ),
+                          onPressed: () => _signIn(context),
                         ),
                       ),
                     ),
