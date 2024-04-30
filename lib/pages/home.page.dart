@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:legatto/widgets/rowHome.dart';
 
-import '../widgets.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -45,7 +44,7 @@ class HomePage extends StatelessWidget {
         ),
         child: ListView(
           children: [
-            HomeGroups("Teste", "Orquestra", "Victor", 1),
+            RowHome("Teste", "Orquestra", "Victor", 1),
           ],
         ),
       ),
