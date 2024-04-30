@@ -21,7 +21,13 @@ class App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: false,
-        primarySwatch: getMaterialColor(Color(0xFF191A47)),
+        primarySwatch: getMaterialColor(const Color(0xFF191A47)),
+
+        textTheme: Typography(platform: TargetPlatform.iOS).white,
+        iconTheme: const IconThemeData(color: Colors.white),
+        textButtonTheme: const TextButtonThemeData(style: ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.white))),
+
+        fontFamily: 'Poppins'
         // colorSchemeSeed: Color(0xFF191A47),
       ),
       routes: {

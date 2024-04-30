@@ -70,14 +70,13 @@ class _RegisterState extends State<Register> {
               Container(
                 alignment: Alignment.centerLeft,
                 child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  icon: const Icon(Icons.arrow_back),
                   onPressed: () => Navigator.pop(context),
                 ),
               ),
               const Text(
                 'CADASTRO',
                 style: TextStyle(
-                  color: Colors.white,
                   fontSize: 34,
                   fontWeight: FontWeight.w900
                 ),
@@ -99,6 +98,7 @@ class _RegisterState extends State<Register> {
                           margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                           height: 50,
                           child: TextField(
+                            style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20.0)
@@ -126,6 +126,7 @@ class _RegisterState extends State<Register> {
                           margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                           height: 50,
                           child: TextField(
+                            style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20.0)
@@ -153,6 +154,7 @@ class _RegisterState extends State<Register> {
                           margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                           height: 50,
                           child: TextField(
+                            style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20.0)
@@ -187,6 +189,7 @@ class _RegisterState extends State<Register> {
                           margin: const EdgeInsets.fromLTRB(0, 10, 0, 40),
                           height: 50,
                           child: TextField(
+                            style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20.0)

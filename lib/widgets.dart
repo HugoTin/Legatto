@@ -6,7 +6,7 @@ class HomeGroups extends StatelessWidget {
   final String msg;
   final int done;
 
-  HomeGroups(this.image, this.title, this.msg, this.done);
+  const HomeGroups(this.image, this.title, this.msg, this.done, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,12 +16,12 @@ class HomeGroups extends StatelessWidget {
       leading: CircleAvatar(
         backgroundImage: NetworkImage(image),
       ),
-      title: Text(this.title),
+      title: Text(title),
       subtitle: Wrap(
         crossAxisAlignment: WrapCrossAlignment.center,
         children: [
-          Icon(Icons.done_all, size: Checkbox.width),
-          Text(" " + this.msg),
+          const Icon(Icons.done_all, size: Checkbox.width),
+          Text(" $msg"),
         ],
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/widgets.dart';
 class Login extends StatefulWidget {
   const Login({super.key});
 
@@ -64,14 +65,15 @@ class _LoginState extends State<Login>{
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                margin: const EdgeInsets.only(top: 300),
+                margin: const EdgeInsets.only(top: 120),
+                height: 80,
                 child: 
                 Container(
                   alignment: Alignment.center,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
                     image: AssetImage("images/LegattoLogo2.png"),
-                    fit: BoxFit.fill,
+                    fit: BoxFit.fitHeight,
                   ))
                 ),
               ),
@@ -85,13 +87,13 @@ class _LoginState extends State<Login>{
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'E-mail',
-                            style: TextStyle(color: Colors.white),
                           ),
                         ),
                         Container(
                           margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                           height: 50,
                           child: TextField(
+                            style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20.0)
@@ -113,13 +115,13 @@ class _LoginState extends State<Login>{
                           alignment: Alignment.centerLeft,
                           child: Text(
                             'Senha',
-                            style: TextStyle(color: Colors.white),
                           ),
                         ),
                         Container(
                           margin: const EdgeInsets.fromLTRB(0, 10, 0, 40),
                           height: 50,
                           child: TextField(
+                            style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20.0)
@@ -160,8 +162,8 @@ class _LoginState extends State<Login>{
                           child: const Text(
                             'ENTRAR',
                             style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900
                             ),
                           ),
                           onPressed: () => _signIn(context),
@@ -169,14 +171,13 @@ class _LoginState extends State<Login>{
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.only(top: 40),
+                      margin: const EdgeInsets.only(top: 20),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
                             'Esqueci minha senha',
                             style: TextStyle(
-                              color: Colors.white,
                               fontWeight: FontWeight.w700
                             ),
                           ),
@@ -185,7 +186,6 @@ class _LoginState extends State<Login>{
                             child: const Text(
                               'Fazer cadastro',
                               style: TextStyle(
-                                color: Colors.white,
                                 fontWeight: FontWeight.w700
                               ),
                             ),
