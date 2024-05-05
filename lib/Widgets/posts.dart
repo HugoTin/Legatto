@@ -18,6 +18,7 @@ class Posts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: MediaQuery.sizeOf(context).width,
       decoration: BoxDecoration(
           color: Color.fromRGBO(92, 45, 151, 1),
           borderRadius: BorderRadius.all(Radius.circular(20))),
@@ -71,26 +72,23 @@ class Posts extends StatelessWidget {
             ],
           ),
           SizedBox(height: 30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text(
-                titlePost,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold),
-              ),
-            ],
+          Container(
+            width: MediaQuery.sizeOf(context).width,
+            child: Text(
+              titlePost,
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold),
+            ),
           ),
           SizedBox(height: 30),
-          Row(
-            children: [
-              Text(
-                content,
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              )
-            ],
+          Container(
+            width: MediaQuery.sizeOf(context).width,
+            child: Text(
+              content,
+              style: TextStyle(color: Colors.white, fontSize: 20),
+            ),
           ),
           SizedBox(height: 25),
           Row(

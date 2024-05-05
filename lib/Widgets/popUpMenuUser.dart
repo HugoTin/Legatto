@@ -11,16 +11,24 @@ class PopUpMenuUser extends StatelessWidget {
         Icons.more_vert,
         color: Colors.white,
       ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(15.0),
+        ),
+      ),
       itemBuilder: (context) => [
         const PopupMenuItem(
+          textStyle: TextStyle(color: Colors.black),
           value: 1,
           child: Text("Remover membro"),
         ),
         PopupMenuItem(
+          textStyle: TextStyle(color: Colors.black),
           value: 2,
           child: Text(_isAdmin()),
         ),
         const PopupMenuItem(
+          textStyle: TextStyle(color: Colors.black),
           value: 3,
           child: Text("Adicionar ao naipe"),
         ),

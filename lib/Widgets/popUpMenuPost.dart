@@ -12,17 +12,25 @@ class PopUpMenuPost extends StatelessWidget {
         Icons.more_vert,
         color: Colors.white,
       ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(15.0),
+        ),
+      ),
       itemBuilder: (context) => [
         const PopupMenuItem(
+          textStyle: TextStyle(color: Colors.black),
           value: 1,
           child: Text("Editar"),
         ),
         if (isAdmin)
           const PopupMenuItem(
+            textStyle: TextStyle(color: Colors.black),
             value: 2,
             child: Text("Fixar"),
           ),
         const PopupMenuItem(
+          textStyle: TextStyle(color: Colors.black),
           value: 3,
           child: Text("Excluir"),
         ),

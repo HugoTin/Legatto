@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 
-import 'package:legatto/widgets/popUpMenuNaipe.dart';
-import 'package:legatto/widgets/popUpMenuUser.dart';
+import 'package:legatto/widgets/rowMember.dart';
+import 'package:legatto/widgets/rowNaipe.dart';
 
 class ConfigGroup extends StatelessWidget {
   const ConfigGroup({super.key});
@@ -212,22 +212,22 @@ class ConfigGroup extends StatelessWidget {
                               ),
                             ),
                           ),
-                          _RowMember('images/UsersExemplos/Lance-Stroll.jpg',
+                          RowMember('images/UsersExemplos/Lance-Stroll.jpg',
                               "Lance Stroll", true, true),
                           SizedBox(
                             height: 15,
                           ),
-                          _RowMember('images/UsersExemplos/Pierre-Gasly.jpg',
+                          RowMember('images/UsersExemplos/Pierre-Gasly.jpg',
                               "Pierre Gasly", true, false),
                           SizedBox(
                             height: 15,
                           ),
-                          _RowMember('images/UsersExemplos/Fernando-Alonso.jpg',
+                          RowMember('images/UsersExemplos/Fernando-Alonso.jpg',
                               "Fernando Alonso", false, true),
                           SizedBox(
                             height: 15,
                           ),
-                          _RowMember('images/UsersExemplos/Lando-Norris.jpg',
+                          RowMember('images/UsersExemplos/Lando-Norris.jpg',
                               "Lando Norris", false, false),
                           SizedBox(
                             height: 15,
@@ -264,13 +264,13 @@ class ConfigGroup extends StatelessWidget {
                             ),
                           ),
                           SizedBox(height: 20),
-                          _RowNaipe(
+                          RowNaipe(
                               "images/NaipeViolino.png", "Violino", 1, true),
                           SizedBox(height: 15),
-                          _RowNaipe(
+                          RowNaipe(
                               "images/NaipeTrompete.png", "Trompete", 0, false),
                           SizedBox(height: 15),
-                          _RowNaipe(
+                          RowNaipe(
                               "images/NaipeClarinete.png", "Clarinete", 0, true)
                         ],
                       ),
@@ -282,101 +282,6 @@ class ConfigGroup extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-/*
------ ROW MEMBER -----
-Template linha do membro na aba de informações do grupo
-*/
-// ignore: must_be_immutable
-class _RowMember extends StatelessWidget {
-  late String image;
-  late String name;
-  late bool isAdmin;
-  late bool isUser;
-
-  _RowMember(this.image, this.name, this.isAdmin, this.isUser, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        ClipOval(
-          child: SizedBox.fromSize(
-            size: Size.fromRadius(25),
-            child: Image.asset(
-              image,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        SizedBox(width: 10),
-        Text(
-          name,
-          style: TextStyle(color: Colors.white, fontSize: 20),
-        ),
-        if (isAdmin)
-          SizedBox(
-            width: 50,
-            child: Text(
-              "Admin",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                backgroundColor: Color.fromRGBO(191, 141, 255, 1),
-                fontSize: 10,
-              ),
-            ),
-          ),
-        Spacer(
-          flex: 100,
-        ),
-        if (isUser) PopUpMenuUser(isAdmin)
-      ],
-    );
-  }
-}
-
-/*
------ ROW NAIPE -----
-Template linha do naipe na aba de informações do grupo
-*/
-class _RowNaipe extends StatelessWidget {
-  final String image;
-  final String name;
-  final int participants;
-  final bool isAdmin;
-
-  const _RowNaipe(this.image, this.name, this.participants, this.isAdmin,
-      {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(
-            width: 70,
-            child: Image.asset(
-              image,
-              height: 40,
-              width: 40,
-            )),
-        Text(
-          name,
-          style: TextStyle(color: Colors.white, fontSize: 20),
-        ),
-        SizedBox(width: 10),
-        Text(
-          "(${participants.toString()})",
-          style: TextStyle(color: Colors.white, fontSize: 20),
-        ),
-        Spacer(
-          flex: 100,
-        ),
-        PopUpMenuNaipe(isAdmin)
-      ],
     );
   }
 }

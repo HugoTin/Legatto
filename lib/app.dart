@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 import 'pages/login/login.page.dart';
 import 'pages/login/register.page.dart';
 
@@ -11,6 +10,8 @@ import 'pages/group/homegroup.page.dart';
 import 'pages/group/configgroup.page.dart';
 
 import 'pages/group/naipe/managnaipe.page.dart';
+import 'pages/group/naipe/usersNaipe.page.dart';
+import 'pages/group/naipe/searchUser.page.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -20,16 +21,16 @@ class App extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        useMaterial3: false,
-        primarySwatch: getMaterialColor(const Color(0xFF191A47)),
-
-        textTheme: Typography(platform: TargetPlatform.iOS).white,
-        iconTheme: const IconThemeData(color: Colors.white),
-        textButtonTheme: const TextButtonThemeData(style: ButtonStyle(foregroundColor: MaterialStatePropertyAll(Colors.white))),
-
-        fontFamily: 'Poppins'
-        // colorSchemeSeed: Color(0xFF191A47),
-      ),
+          useMaterial3: false,
+          primarySwatch: getMaterialColor(const Color(0xFF191A47)),
+          textTheme: Typography(platform: TargetPlatform.iOS).white,
+          iconTheme: const IconThemeData(color: Colors.white),
+          textButtonTheme: const TextButtonThemeData(
+              style: ButtonStyle(
+                  foregroundColor: MaterialStatePropertyAll(Colors.white))),
+          fontFamily: 'Poppins'
+          // colorSchemeSeed: Color(0xFF191A47),
+          ),
       routes: {
         "/login": (context) => const Login(),
         "/register": (context) => const Register(),
@@ -38,6 +39,8 @@ class App extends StatelessWidget {
         "/homegroup": (context) => const HomeGroup(),
         "/configgroup": (context) => const ConfigGroup(),
         "/managnaipe": (context) => const ManagNaipe(),
+        "/usersnaipe": (context) => const UsersNaipe(),
+        "/searchuser": (context) => const SearchUser(),
       },
       initialRoute: "/home",
     );

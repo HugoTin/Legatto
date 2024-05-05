@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:legatto/widgets/rowHome.dart';
 
-
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
   void _logout(BuildContext context) {
@@ -13,14 +12,18 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Legatto"),
+        title: Image.asset(
+          'images/LegattoLogo2.png',
+          height: 50,
+        ),
+        toolbarHeight: 80,
         actions: [
           IconButton(
             onPressed: () => _logout(context),
             icon: Icon(Icons.logout),
           )
         ],
-        centerTitle: true,
+        centerTitle: false,
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
@@ -32,24 +35,19 @@ class HomePage extends StatelessWidget {
       ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-              colors: [
-                const Color(0xFF233C95),
-                const Color(0xFF1B013D),
-              ],
-              begin: const FractionalOffset(0.0, 0.0),
-              end: const FractionalOffset(0.0, 1.0),
-              stops: [0.0, 1.0],
-              tileMode: TileMode.clamp),
-        ),
+            image: DecorationImage(
+          image: AssetImage("images/HomeBackground.png"),
+          fit: BoxFit.fill,
+        )),
+        padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
         child: ListView(
+          scrollDirection: Axis.vertical,
           children: [
-            RowHome("Teste", "Orquestra", "Victor", 1),
+            // RowHome("Teste", "Orquestra Sinfônica", "Victor", 1),
+            RowHome('images/logo-osrp.jpeg', "Orquestra Sinfônica"),
           ],
         ),
       ),
     );
   }
 }
-
-

@@ -12,28 +12,38 @@ class PopUpMenuFile extends StatelessWidget {
         Icons.more_vert,
         color: Colors.white,
       ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(15.0),
+        ),
+      ),
       itemBuilder: (context) => [
         const PopupMenuItem(
+          textStyle: TextStyle(color: Colors.black),
           value: 1,
           child: Text("Favoritar"),
         ),
         if (isAdmin)
           const PopupMenuItem(
+            textStyle: TextStyle(color: Colors.black),
             value: 2,
             child: Text("Renomear"),
           ),
         if (isAdmin)
           const PopupMenuItem(
+            textStyle: TextStyle(color: Colors.black),
             value: 3,
             child: Text("Arquivar"),
           ),
         if (isAdmin)
           const PopupMenuItem(
+            textStyle: TextStyle(color: Colors.black),
             value: 4,
             child: Text("Fixar"),
           ),
         if (isAdmin)
           const PopupMenuItem(
+            textStyle: TextStyle(color: Colors.black),
             value: 5,
             child: Text("Excluir"),
           ),

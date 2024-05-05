@@ -87,58 +87,67 @@ class _HomeGroupState extends State<HomeGroup>
         body: Expanded(
           child: Container(
             color: Color.fromRGBO(12, 12, 36, 1),
-            padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+            // padding: EdgeInsets.all(20),
             child: TabBarView(
               controller: _tabController,
               children: [
-                ListView(
-                  scrollDirection: Axis.vertical,
-                  children: [
-                    Posts(
-                        'images/UsersExemplos/Fernando-Alonso.jpg',
-                        "Fernando Alonso",
-                        "21/04",
-                        "23:00",
-                        "Título da postagem",
-                        "Conteúdo da postagem",
-                        true,
-                        true),
-                    SizedBox(height: 20),
-                    Posts(
-                        'images/UsersExemplos/Pierre-Gasly.jpg',
-                        "Pierre Gasly",
-                        "21/04",
-                        "23:30",
-                        "Apresentação no dia 22/04",
-                        "Apresentação do primeiro sprint!!",
-                        false,
-                        false),
-                    SizedBox(height: 20),
-                    Posts(
-                        'images/UsersExemplos/Lando-Norris.jpg',
-                        "Lando Norris",
-                        "21/04",
-                        "23:31",
-                        "Olá a todos!",
-                        "É um prazer conhecê-los!!",
-                        true,
-                        false),
-                    SizedBox(height: 20),
-                    Posts(
-                        'images/UsersExemplos/Lance-Stroll.jpg',
-                        "Lance Stroll",
-                        "21/04",
-                        "23:35",
-                        "Boa noite!!",
-                        "Essa é minha primeira postagem",
-                        false,
-                        true),
-                  ],
+                Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                    image: AssetImage("images/OpacidadeBackgroundChat.png"),
+                    fit: BoxFit.fitWidth,
+                  )),
+                  child: ListView(
+                    scrollDirection: Axis.vertical,
+                    children: [
+                      Posts(
+                          'images/UsersExemplos/Fernando-Alonso.jpg',
+                          "Fernando Alonso",
+                          "21/04",
+                          "23:00",
+                          "Título da postagem",
+                          "Conteúdo da postagem",
+                          true,
+                          true),
+                      SizedBox(height: 20),
+                      Posts(
+                          'images/UsersExemplos/Pierre-Gasly.jpg',
+                          "Pierre Gasly",
+                          "21/04",
+                          "23:30",
+                          "Apresentação no dia 22/04",
+                          "Apresentação do primeiro sprint!!",
+                          false,
+                          false),
+                      SizedBox(height: 20),
+                      Posts(
+                          'images/UsersExemplos/Lando-Norris.jpg',
+                          "Lando Norris",
+                          "21/04",
+                          "23:31",
+                          "Olá a todos!",
+                          "É um prazer conhecê-los!!",
+                          true,
+                          false),
+                      SizedBox(height: 20),
+                      Posts(
+                          'images/UsersExemplos/Lance-Stroll.jpg',
+                          "Lance Stroll",
+                          "21/04",
+                          "23:35",
+                          "Boa noite!!",
+                          "Essa é minha primeira postagem",
+                          false,
+                          true),
+                    ],
+                  ),
                 ),
                 ListView(
                   scrollDirection: Axis.vertical,
                   children: [
                     Container(
+                      padding: EdgeInsets.all(20),
                       child: Column(
                         children: [
                           _RowPDF("Partitura", false),
@@ -162,18 +171,24 @@ class _HomeGroupState extends State<HomeGroup>
 
   Widget _bottomButtons() {
     return _tabController.index == 0
-        ? FloatingActionButton.extended(
-            onPressed: null,
+        ? FloatingActionButton(
+            onPressed: () {},
             backgroundColor: Colors.white,
-            label: Text("Adicionar Postagem",
-                style: TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold)))
-        : FloatingActionButton.extended(
-            onPressed: null,
+            child: Icon(
+              Icons.add_comment_rounded,
+              color: Colors.black,
+              size: 30,
+            ),
+          )
+        : FloatingActionButton(
+            onPressed: () {},
             backgroundColor: Colors.white,
-            label: Text("Adicionar partitura",
-                style: TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold)));
+            child: Icon(
+              Icons.note_add_rounded,
+              color: Colors.black,
+              size: 30,
+            ),
+          );
   }
 }
 
