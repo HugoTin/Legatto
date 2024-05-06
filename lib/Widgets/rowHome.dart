@@ -18,13 +18,13 @@ class RowHome extends StatelessWidget {
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(15),
         child: SizedBox.fromSize(
-          size: Size.fromRadius(25),
+          size: const Size.fromRadius(25),
           child: Image.asset(image),
         ),
       ),
       title: Text(
         title,
-        style: TextStyle(fontSize: 18),
+        style: const TextStyle(fontSize: 18),
       ),
       // subtitle: Wrap(
       //   crossAxisAlignment: WrapCrossAlignment.center,
@@ -34,7 +34,7 @@ class RowHome extends StatelessWidget {
       //   ],
       // ),
       trailing: PopupMenuButton<int>(
-        icon: Icon(
+        icon: const Icon(
           Icons.more_vert,
           size: 30,
         ),

@@ -21,17 +21,42 @@ class _LoginState extends State<Login>{
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: fieldEmail.text,
-        password: fieldPassword.text,
+        email: fieldEmail.text.trim(),
+        password: fieldPassword.text.trim(),
       );
 
       Navigator.pushReplacementNamed(context, "/home");
     }
     on FirebaseAuthException catch (ex) {
+
+      String? err = ex.code;
+
+      switch(err){
+        case 'invalid-credential':
+          err = 'Email e/ou senha inválidos.';
+          break;
+        case 'internal-error':
+          err = 'Erro interno. Tente novamente.';
+          break;
+        case 'invalid-email':
+          err = 'Email inválido.';
+          break;
+        case 'invalid-password':
+          err = 'Senha inválida.';
+          break;
+        case 'user-not-found':
+          err = 'Email e/ou senha inválidos.';
+          break;
+        default:
+          print(err);
+          err = 'Erro ao entrar. Tente novamente.';
+
+      }
+
       ScaffoldMessenger
         .of(context)
         .showSnackBar(SnackBar(
-          content: Text(ex.message!),
+          content: Text(err),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
           ),
@@ -42,170 +67,173 @@ class _LoginState extends State<Login>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('images/BackgroundInício.png'),
-            fit: BoxFit.fill
-          )
-          // gradient: LinearGradient(
-          //   colors: [
-          //     Color(0xFF233C95),
-          //     Color(0xFF1B013D),
-          //   ],
-          //   begin: FractionalOffset(0.0, 0.0),
-          //   end: FractionalOffset(0.0, 1.0),
-          //   stops: [0.0, 1.0],
-          //   tileMode: TileMode.clamp
-          // ),
-        ),
-        child: SizedBox(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 120),
-                height: 80,
-                child: 
-                Container(
-                  alignment: Alignment.center,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                    image: AssetImage("images/LegattoLogo2.png"),
-                    fit: BoxFit.fitHeight,
-                  ))
-                ),
-              ),
-              SizedBox(
-                // width: MediaQuery.of(context).size.width * 0.8,
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('images/BackgroundInício.png'),
+                fit: BoxFit.fill
+              )
+            ),
+          ),
+
+          SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+              child: SizedBox(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      children: [
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'E-mail',
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                          height: 50,
-                          child: TextField(
-                            style: const TextStyle(color: Colors.black),
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20.0)
-                              ),
-                              hintText: "Digite seu email",
-                              fillColor: Colors.white,
-                              filled: true,
-                              prefixIcon: const Icon(Icons.email),
-                            ),
-                            controller: fieldEmail,
-                            keyboardType: TextInputType.emailAddress,
-                          ),
-                        )
-                      ]
-                    ),
-                    Column(
-                      children: [
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Senha',
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.fromLTRB(0, 10, 0, 40),
-                          height: 50,
-                          child: TextField(
-                            style: const TextStyle(color: Colors.black),
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20.0)
-                              ),
-                              hintText: "Digite sua senha",
-                              fillColor: Colors.white,
-                              filled: true,
-                              prefixIcon: const Icon(Icons.lock),
-                              suffixIcon: IconButton(
-                                onPressed: () => setState(() => _changeVisibility()),
-                                icon: Icon(
-                                  hidePassword ? Icons.visibility : Icons.visibility_off,
-                                ),
-                                padding: const EdgeInsets.only(right: 10),
-                              )
-                            ),
-                            controller: fieldPassword,
-                            obscureText: !hidePassword,
-                          ),
-                        )
-                      ]
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: null,
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
-                          ),
-                          side: const BorderSide(
-                            width: 1.0,
-                            color: Colors.white,
-                          )
-                        ),
-                        child: TextButton(
-                          child: const Text(
-                            'ENTRAR',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900
-                            ),
-                          ),
-                          onPressed: () => _signIn(context),
-                        ),
+                    Container(
+                      margin: const EdgeInsets.only(top: 120),
+                      height: 80,
+                      child: Container(
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                          image: AssetImage("images/LegattoLogo2.png"),
+                          fit: BoxFit.fitHeight,
+                        ))
                       ),
                     ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      child: Column(
                         children: [
-                          const Text(
-                            'Esqueci minha senha',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700
-                            ),
+                          Column(
+                            children: [
+                              const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'E-mail',
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+                                height: 50,
+                                child: TextField(
+                                  style: const TextStyle(color: Colors.black),
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20.0)
+                                    ),
+                                    hintText: "Digite seu email",
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                    prefixIcon: const Icon(Icons.email),
+                                  ),
+                                  controller: fieldEmail,
+                                  keyboardType: TextInputType.emailAddress,
+                                ),
+                              )
+                            ]
+                          ),
+                          Column(
+                            children: [
+                              const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Senha',
+                                ),
+                              ),
+                              Container(
+                                margin: const EdgeInsets.fromLTRB(0, 10, 0, 40),
+                                height: 50,
+                                child: TextField(
+                                  style: const TextStyle(color: Colors.black),
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20.0)
+                                    ),
+                                    hintText: "Digite sua senha",
+                                    fillColor: Colors.white,
+                                    filled: true,
+                                    prefixIcon: const Icon(Icons.lock),
+                                    suffixIcon: IconButton(
+                                      onPressed: () => setState(() => _changeVisibility()),
+                                      icon: Icon(
+                                        hidePassword ? Icons.visibility : Icons.visibility_off,
+                                      ),
+                                      padding: const EdgeInsets.only(right: 10),
+                                    )
+                                  ),
+                                  controller: fieldPassword,
+                                  obscureText: !hidePassword,
+                                ),
+                              )
+                            ]
                           ),
                           TextButton(
-                            onPressed: () => Navigator.pushNamed(context, '/register'),
-                            child: const Text(
-                              'Fazer cadastro',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700
+                            onPressed: () => _signIn(context),
+                            child: SizedBox(
+                              height: 50,
+                              width: MediaQuery.of(context).size.width,
+                              child: ElevatedButton(
+                                onPressed: null,
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  side: const BorderSide(
+                                    width: 1.0,
+                                    color: Colors.white,
+                                  )
+                                ),
+                                child: const Text(
+                                  'ENTRAR',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white
+                                  ),
+                                ),
                               ),
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(top: 20),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Esqueci minha senha',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pushNamed(context, '/register'),
+                                  child: const Text(
+                                    'Fazer cadastro',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700
+                                    ),
+                                  ),
+                                )
+                              ],
                             ),
                           )
                         ],
                       ),
+                    ),
+                    Container(
+                      alignment: Alignment.centerRight,
+                      margin: EdgeInsets.fromLTRB(
+                        0, 0,
+                        MediaQuery.of(context).size.width * 0.05, 20
+                      ),
+                      child: const Icon(
+                        Icons.info,
+                        color: Colors.white,
+                      ),
                     )
                   ],
-                ),
+                )
               ),
-              Container(
-                alignment: Alignment.centerRight,
-                child: const Icon(
-                  Icons.info,
-                  color: Colors.white,
-                ),
-              )
-            ],
+            ),
           )
-        )
+        ]
       ),
     );
   }
