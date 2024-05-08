@@ -55,6 +55,11 @@ class RowHome extends StatelessWidget {
             textStyle: TextStyle(color: Colors.black),
             value: 1,
             child: Text("Silenciar Grupo"),
+          ),
+          PopupMenuItem(
+            textStyle: TextStyle(color: Colors.black),
+            value: 2,
+            child: Text("Adicionar membros"),
           )
         ],
         onSelected: (value) {
@@ -65,6 +70,8 @@ class RowHome extends StatelessWidget {
             case 1:
               null;
               break;
+            case 2:
+              Navigator.pushNamed(context, '/addmember');
           }
         },
       ),

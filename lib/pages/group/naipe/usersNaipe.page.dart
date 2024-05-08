@@ -12,43 +12,24 @@ class UsersNaipe extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
         child: Icon(
-          Icons.add,
+          Icons.person_add_alt_rounded,
           color: Colors.black,
         ),
         onPressed: () => Navigator.pushNamed(context, "/searchuser"),
       ),
       body: Container(
         padding: EdgeInsetsDirectional.all(15),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-              colors: [
-                const Color(0xFF233C95),
-                const Color(0xFF1B013D),
-              ],
-              begin: const FractionalOffset(0.0, 0.0),
-              end: const FractionalOffset(0.0, 1.0),
-              stops: [0.0, 1.0],
-              tileMode: TileMode.clamp),
-        ),
+        color: Color.fromRGBO(12, 12, 36, 1),
         child: Column(
           children: [
             RowMember('images/UsersExemplos/Fernando-Alonso.jpg',
                 'Fernando Alonso', true, true),
-            SizedBox(
-              height: 20,
-            ),
             RowMember('images/UsersExemplos/Lance-Stroll.jpg', 'Lance Stroll',
                 true, false),
-            SizedBox(
-              height: 20,
-            ),
             RowMember('images/UsersExemplos/Pierre-Gasly.jpg', 'Pierre Gasly',
                 false, true),
-            SizedBox(
-              height: 20,
-            ),
             RowMember('images/UsersExemplos/Lando-Norris.jpg', 'Lando Norris',
-                false, true),
+                false, false),
           ],
         ),
       ),

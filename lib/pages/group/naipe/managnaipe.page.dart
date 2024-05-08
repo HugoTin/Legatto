@@ -37,16 +37,10 @@ class ManagNaipe extends StatelessWidget {
       body: Container(
         padding: EdgeInsetsDirectional.all(15),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-              colors: [
-                const Color(0xFF233C95),
-                const Color(0xFF1B013D),
-              ],
-              begin: const FractionalOffset(0.0, 0.0),
-              end: const FractionalOffset(0.0, 1.0),
-              stops: [0.0, 1.0],
-              tileMode: TileMode.clamp),
-        ),
+            image: DecorationImage(
+          image: AssetImage("images/HomeBackground.png"),
+          fit: BoxFit.fill,
+        )),
         child: ListView(
           scrollDirection: Axis.vertical,
           children: [

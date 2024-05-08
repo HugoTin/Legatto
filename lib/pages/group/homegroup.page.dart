@@ -18,7 +18,7 @@ class _HomeGroupState extends State<HomeGroup>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  void _actionButtom(BuildContext context) {
+  void _actionButton(BuildContext context) {
     null;
   }
 

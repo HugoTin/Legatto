@@ -18,13 +18,10 @@ class NewGroup extends StatelessWidget {
         ),
         body: Container(
           decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                Color.fromRGBO(52, 82, 214, 1),
-                Color.fromRGBO(27, 1, 61, 1),
-              ])),
+              image: DecorationImage(
+            image: AssetImage("images/HomeBackground.png"),
+            fit: BoxFit.fill,
+          )),
           child: Center(
             child: Container(
               padding: const EdgeInsets.symmetric(
@@ -41,6 +38,7 @@ class NewGroup extends StatelessWidget {
                           style: TextStyle(
                               height: 1, fontSize: 25, color: Colors.white))),
                   TextField(
+                      style: TextStyle(color: Colors.black),
                       maxLength: 8,
                       decoration: InputDecoration(
                         hintText: "Digite o Código",
