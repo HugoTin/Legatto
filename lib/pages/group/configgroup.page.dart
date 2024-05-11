@@ -435,7 +435,7 @@ class ConfigGroup extends StatelessWidget {
               child: TabBar(
                 indicatorWeight: 3,
                 indicatorColor: Color.fromRGBO(151, 71, 255, 1),
-                indicatorPadding: EdgeInsets.fromLTRB(100, 0, 100, 13),
+                // indicatorPadding: EdgeInsets.fromLTRB(100, 0, 100, 13),
                 tabs: const [
                   Tab(text: "Membros"),
                   Tab(text: "Naipes"),
@@ -444,7 +444,7 @@ class ConfigGroup extends StatelessWidget {
             ),
             Expanded(
               child: Container(
-                padding: EdgeInsets.fromLTRB(10, 20, 20, 20),
+                padding: EdgeInsets.fromLTRB(10, 20, 10, 0),
                 color: Color.fromRGBO(20, 20, 61, 1),
                 child: TabBarView(children: [
                   ListView(

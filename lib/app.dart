@@ -39,7 +39,7 @@ class App extends StatelessWidget {
         "/newgroup": (context) => const NewGroup(),
         "/homegroup": (context) => const HomeGroup(),
         "/configgroup": (context) => const ConfigGroup(),
-        "/addmember": (context) => const AddMember(),
+        "/addmember": (context) => AddMember(),
         "/managnaipe": (context) => const ManagNaipe(),
         "/usersnaipe": (context) => const UsersNaipe(),
         "/searchuser": (context) => const SearchUser(),
