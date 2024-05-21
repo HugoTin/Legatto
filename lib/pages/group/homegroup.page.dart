@@ -182,7 +182,7 @@ class _HomeGroupState extends State<HomeGroup>
             ),
           )
         : FloatingActionButton(
-            onPressed: () => Navigator.pushNamed(context, '/register'),
+            onPressed: () => Navigator.pushNamed(context, '/addfiles'),
             backgroundColor: Colors.white,
             child: Icon(
               Icons.note_add_rounded,

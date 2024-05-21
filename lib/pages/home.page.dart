@@ -6,21 +6,21 @@ import 'package:legatto/widgets/rowHome.dart';
 class AuthRouter extends StatelessWidget {
   const AuthRouter({super.key});
 
-  void _logout(BuildContext context) {
-    // posteriormente signout usando firebase
-    Navigator.pushReplacementNamed(context, "/login");
-  }
-
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseAuth.instance.userChanges(),
-      builder: (context, snapshot) {
-        print('Auth data ${snapshot.hasData} ${snapshot.data!.displayName}');
-        if(snapshot.hasData){ return const HomePage(); }
-        else { return const Login(); }
-      }
-    );
+    // print('AUTH_HOME ${FirebaseAuth.instance.currentUser}');
+
+    if(FirebaseAuth.instance.currentUser != null){ return const HomePage(); }
+    else{ return const Login(); }
+    
+    // return StreamBuilder(
+    //   stream: FirebaseAuth.instance.userChanges(),
+    //   builder: (context, snapshot) {
+    //     print('Auth data ${snapshot.hasData} ${snapshot.data!.displayName}');
+    //     if(snapshot.hasData){ return const HomePage(); }
+    //     else { return const Login(); }
+    //   }
+    // );
   }
 }
 
@@ -28,7 +28,7 @@ class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   void _logout(BuildContext context) {
-    // posteriormente signout usando firebase
+    FirebaseAuth.instance.signOut();
     Navigator.pushReplacementNamed(context, "/login");
   }
 
