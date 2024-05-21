@@ -1,8 +1,32 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:legatto/pages/login/login.page.dart';
 import 'package:legatto/widgets/rowHome.dart';
+
+class AuthRouter extends StatelessWidget {
+  const AuthRouter({super.key});
+
+  void _logout(BuildContext context) {
+    // posteriormente signout usando firebase
+    Navigator.pushReplacementNamed(context, "/login");
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: FirebaseAuth.instance.userChanges(),
+      builder: (context, snapshot) {
+        print('Auth data ${snapshot.hasData} ${snapshot.data!.displayName}');
+        if(snapshot.hasData){ return const HomePage(); }
+        else { return const Login(); }
+      }
+    );
+  }
+}
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
   void _logout(BuildContext context) {
     // posteriormente signout usando firebase
     Navigator.pushReplacementNamed(context, "/login");
@@ -20,29 +44,29 @@ class HomePage extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () => _logout(context),
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
           )
         ],
         centerTitle: false,
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
-        child: Icon(
+        child: const Icon(
           Icons.add,
           color: Colors.black,
         ),
         onPressed: () => Navigator.pushNamed(context, "/newgroup"),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             image: DecorationImage(
           image: AssetImage("images/HomeBackground.png"),
           fit: BoxFit.fill,
         )),
-        padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
+        padding: const EdgeInsets.fromLTRB(0, 20, 0, 20),
         child: ListView(
           scrollDirection: Axis.vertical,
-          children: [
+          children: const [
             // RowHome("Teste", "Orquestra Sinfônica", "Victor", 1),
             RowHome('images/logo-osrp.jpeg', "Orquestra Sinfônica"),
           ],

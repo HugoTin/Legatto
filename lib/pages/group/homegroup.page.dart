@@ -40,6 +40,7 @@ class _HomeGroupState extends State<HomeGroup>
     setState(() {});
   }
 
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       top: false,
@@ -181,7 +182,7 @@ class _HomeGroupState extends State<HomeGroup>
             ),
           )
         : FloatingActionButton(
-            onPressed: () {},
+            onPressed: () => Navigator.pushNamed(context, '/register'),
             backgroundColor: Colors.white,
             child: Icon(
               Icons.note_add_rounded,

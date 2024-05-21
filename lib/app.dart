@@ -9,6 +9,7 @@ import 'pages/newgroup.page.dart';
 import 'pages/group/homegroup.page.dart';
 import 'pages/group/configgroup.page.dart';
 import 'pages/group/addMember.page.dart';
+import 'pages/group/addFiles.page.dart';
 
 import 'pages/group/naipe/managnaipe.page.dart';
 import 'pages/group/naipe/usersNaipe.page.dart';
@@ -35,11 +36,12 @@ class App extends StatelessWidget {
       routes: {
         "/login": (context) => const Login(),
         "/register": (context) => const Register(),
-        "/home": (context) => const HomePage(),
+        "/home": (context) => const AuthRouter(),
         "/newgroup": (context) => const NewGroup(),
         "/homegroup": (context) => const HomeGroup(),
         "/configgroup": (context) => const ConfigGroup(),
         "/addmember": (context) => AddMember(),
+        "/addfiles": (context) => const AddFiles(),
         "/managnaipe": (context) => const ManagNaipe(),
         "/usersnaipe": (context) => const UsersNaipe(),
         "/searchuser": (context) => const SearchUser(),
