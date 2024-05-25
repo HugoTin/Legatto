@@ -9,7 +9,7 @@ class AuthRouter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // print('AUTH_HOME ${FirebaseAuth.instance.currentUser}');
-
+    
     if(FirebaseAuth.instance.currentUser != null){ return const HomePage(); }
     else{ return const Login(); }
     
