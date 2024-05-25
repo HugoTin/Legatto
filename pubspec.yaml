@@ -43,6 +43,8 @@ dependencies:
 
   # Adicionando info-popup
   info_popup: ^3.0.0
+  dotted_border: ^2.0.0
+  file_picker: ^8.0.3
 
 
 
