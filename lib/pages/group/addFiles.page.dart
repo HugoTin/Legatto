@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:legatto/enum/naipes.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
@@ -15,17 +12,43 @@ class AddFiles extends StatefulWidget {
 
 class _AddFiles extends State<AddFiles> {
 
+  Map<
+      String, 
+      Map<
+        String, 
+        List<Widget>
+      >
+  > uploadedFiles = {
+    'Teste': {
+      'fileNames': [],
+      'widgets': []
+    }
+  };
+
+  _AddFiles(){
+
+    for(var element in Naipes.values){ 
+      
+      uploadedFiles[element.name] = {
+        'fileNames': [],
+        'widgets': []
+      }; 
+      
+    }
+
+  }
+
   List<Widget> naipes = [];
 
   List<Widget> _listNaipes(){
 
-    for (var element in Naipes.values){
+    naipes = [];
 
+    for(var element in Naipes.values){
       naipes.add(
         Container(
-          width: MediaQuery.of(context).size.width * 0.9,
           padding: const EdgeInsets.all(10),
-          margin: const EdgeInsets.all(10),
+          margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           decoration: const BoxDecoration(
             color: Color.fromRGBO(92, 45, 151, 1),
             borderRadius: BorderRadius.all(
@@ -49,7 +72,7 @@ class _AddFiles extends State<AddFiles> {
                     ],
                   ),
                   TextButton(
-                    onPressed: () => _openFileUploader(),
+                    onPressed: () => _openFileUploader(element.name),
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       // alignment: Alignment.centerRight,
@@ -69,10 +92,10 @@ class _AddFiles extends State<AddFiles> {
                 ],
               ),
 
-              TextButton(
-                onPressed: () => _openFileUploader(),
-                child: Container(
-                  margin: const EdgeInsets.fromLTRB(0, 20, 0, 20),
+              Container(
+                  margin: const EdgeInsets.fromLTRB(0, 25, 0, 25),
+                child: TextButton(
+                  onPressed: () => _openFileUploader(element.name),
                   child: DottedBorder(
                     strokeWidth: 2,
                     color: Colors.grey,
@@ -81,23 +104,28 @@ class _AddFiles extends State<AddFiles> {
                     dashPattern: const [10, 10],
                     child: Container(
                       margin: const EdgeInsets.all(10),
-                      width: MediaQuery.of(context).size.width * 0.75,
-                      height: 100,
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Icon(
-                            Icons.file_download_outlined,
-                            color: Colors.white54,
-                          ),
-                          Text(
-                            'Os arquivos adicionados aparecerão aqui.',
-                            style: TextStyle(
-                              color: Colors.white54
+                      width: MediaQuery.of(context).size.width * 0.9,
+                      height: uploadedFiles[element.name]!['widgets']!.isEmpty ? 100 : null,
+                      child: 
+                        uploadedFiles[element.name]!['widgets']!.isEmpty ?
+                        const Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Icon(
+                              Icons.file_download_outlined,
+                              color: Colors.white54,
                             ),
-                          )
-                        ],
-                      ),
+                            Text(
+                              'Os arquivos adicionados aparecerão aqui.',
+                              style: TextStyle(
+                                color: Colors.white54
+                              ),
+                            )
+                          ],
+                        ) :
+                        Column(
+                          children: uploadedFiles[element.name]!['widgets']!
+                        )
                     ),
                   ),
                 ),
@@ -113,14 +141,73 @@ class _AddFiles extends State<AddFiles> {
 
   }
 
-  Future<String> _openFileUploader() async {
+  _openFileUploader(naipe) async {
 
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      allowedExtensions: ['jpg', 'png', 'pdf'],
+    // FilePickerResult? result = await FilePicker.platform.pickFiles(
+    //   allowedExtensions: ['jpg', 'png', 'pdf'],
+    // );
+
+    // if(result != null){ return result.files.first.name; }
+    // else{ return ''; }
+
+    // Comportamento ao subir o arquivo
+
+    Widget add = Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        SizedBox(
+          height: 70,
+          child: Row(
+            children: [
+              Image.asset(
+                'images/PDF.png',
+                height: 50,
+              ),
+              const Text(
+                // result!.files.first.name 
+                'Teste'
+              ),
+            ],
+          ),
+        ),
+        TextButton(
+          onPressed: () => _deleteFile(naipe, uploadedFiles[naipe]!['widgets']!.length),
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(
+                Radius.circular(15)
+              ),
+            ),
+            child: const Text(
+              'Excluir',
+              style: TextStyle(
+                color: Colors.red,
+              ),
+            ),
+          )
+        )
+      ],
     );
 
-    if(result != null){ return result.files.first.name; }
-    else{ return ''; }
+    setState(() {
+      uploadedFiles[naipe]!['widgets']!.add(add);
+    });
+
+  }
+
+  _deleteFile(naipe, index){
+
+    setState(() {
+      uploadedFiles[naipe]!['widgets']!.removeAt(index);
+    });
+
+  }
+
+  Future<String> _uploadFiles() async {
+
+    return '';
 
   }
 
@@ -130,10 +217,9 @@ class _AddFiles extends State<AddFiles> {
     return Scaffold(
         appBar: AppBar(
           title: Row(
-            // mainAxisAlignment: MainAxisAlignment.start,
             children: [
               TextButton(
-                onPressed: () => _openFileUploader(), 
+                onPressed: () => Navigator.pop(context), 
                 child: const Icon(Icons.arrow_back_sharp)
               ),
               const Text("Adicionar Arquivos"),
@@ -141,7 +227,7 @@ class _AddFiles extends State<AddFiles> {
           ),
         ),
         body: Container(
-          padding: const EdgeInsets.fromLTRB(20, 25, 20, 25),
+          padding: const EdgeInsets.all(15),
           decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage("images/HomeBackground.png"),
@@ -150,7 +236,16 @@ class _AddFiles extends State<AddFiles> {
           ),
           child: ListView(
             children: _listNaipes(),
-          )
-        ));
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => _uploadFiles(),
+          backgroundColor: Colors.white,
+          child: const Icon(
+            Icons.send_outlined,
+            color: Colors.black,
+          ),
+        ),
+      );
   }
 }
