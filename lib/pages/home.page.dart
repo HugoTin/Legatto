@@ -9,10 +9,13 @@ class AuthRouter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // print('AUTH_HOME ${FirebaseAuth.instance.currentUser}');
-    
-    if(FirebaseAuth.instance.currentUser != null){ return const HomePage(); }
-    else{ return const Login(); }
-    
+
+    if (FirebaseAuth.instance.currentUser != null) {
+      return const HomePage();
+    } else {
+      return const Login();
+    }
+
     // return StreamBuilder(
     //   stream: FirebaseAuth.instance.userChanges(),
     //   builder: (context, snapshot) {
@@ -55,7 +58,9 @@ class HomePage extends StatelessWidget {
           Icons.add,
           color: Colors.black,
         ),
-        onPressed: () => Navigator.pushNamed(context, "/newgroup"),
+        onPressed: () {
+          popUpDialog(context);
+        },
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -74,4 +79,46 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+}
+
+popUpDialog(context) {
+  showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          contentPadding: EdgeInsets.all(0),
+          content: Container(
+            padding: EdgeInsets.all(10),
+            height: 100,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      'Criar novo grupo',
+                      style: TextStyle(color: Colors.black, fontSize: 20),
+                      textAlign: TextAlign.center,
+                    )),
+                Divider(
+                  thickness: 1,
+                  color: Colors.black,
+                ),
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/newgroup');
+                    },
+                    child: Text(
+                      'Entrar em um grupo com código',
+                      style: TextStyle(color: Colors.black, fontSize: 20),
+                      textAlign: TextAlign.center,
+                    )),
+              ],
+            ),
+          ),
+        );
+      });
 }

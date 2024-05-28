@@ -14,6 +14,7 @@ import 'pages/group/addFiles.page.dart';
 import 'pages/group/naipe/managnaipe.page.dart';
 import 'pages/group/naipe/usersNaipe.page.dart';
 import 'pages/group/naipe/searchUser.page.dart';
+import 'pages/group/naipe/addNaipe.page.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -45,6 +46,7 @@ class App extends StatelessWidget {
         "/managnaipe": (context) => const ManagNaipe(),
         "/usersnaipe": (context) => const UsersNaipe(),
         "/searchuser": (context) => const SearchUser(),
+        "/addnaipe": (context) => const AddNaipe(),
       },
       initialRoute: "/home",
     );
