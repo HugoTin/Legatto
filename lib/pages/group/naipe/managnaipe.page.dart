@@ -32,7 +32,7 @@ class ManagNaipe extends StatelessWidget {
           Icons.add,
           color: Colors.black,
         ),
-        onPressed: () {},
+        onPressed: () => Navigator.pushNamed(context, '/addnaipe'),
       ),
       body: Container(
         padding: EdgeInsetsDirectional.all(15),
