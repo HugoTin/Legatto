@@ -4,6 +4,7 @@ import 'package:legatto/pages/login/login.page.dart';
 import 'package:legatto/widgets/rowHome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+
 class AuthRouter extends StatelessWidget {
   const AuthRouter({super.key});
 
@@ -35,9 +36,8 @@ class HomePage extends StatelessWidget {
   final firestore = FirebaseFirestore.instance;
 
   void _logout(BuildContext context) {
-    print('user $user');
-    // FirebaseAuth.instance.signOut();
-    // Navigator.pushReplacementNamed(context, "/login");
+    FirebaseAuth.instance.signOut();
+    Navigator.pushReplacementNamed(context, "/login");
   }
 
   @override
@@ -78,10 +78,9 @@ class HomePage extends StatelessWidget {
 
           List<Widget> listGroups = docs.map((doc) => 
             RowHome(
-              doc['groupImage'] != ''
-              ? 'images/${doc['groupImage']}'
-              :'images/logo-osrp.jpeg'
-              , doc['groupName']
+              doc.id,
+              doc['groupImage'] != '' ? 'images/${doc['groupImage']}' :'images/logo-osrp.jpeg', 
+              doc['groupName']
             ),
           ).toList();
 

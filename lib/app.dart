@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'pages/login/login.page.dart';
 import 'pages/login/register.page.dart';
@@ -21,7 +22,7 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           useMaterial3: false,
@@ -34,24 +35,74 @@ class App extends StatelessWidget {
           fontFamily: 'Poppins'
           // colorSchemeSeed: Color(0xFF191A47),
           ),
-      routes: {
-        "/login": (context) => const Login(),
-        "/register": (context) => const Register(),
-        "/home": (context) => const AuthRouter(),
-        "/newgroup": (context) => const NewGroup(),
-        "/homegroup": (context) => const HomeGroup(),
-        "/configgroup": (context) => const ConfigGroup(),
-        "/addmember": (context) => AddMember(),
-        "/addfiles": (context) => const AddFiles(),
-        "/managnaipe": (context) => const ManagNaipe(),
-        "/usersnaipe": (context) => const UsersNaipe(),
-        "/searchuser": (context) => const SearchUser(),
-        "/addnaipe": (context) => const AddNaipe(),
-      },
-      initialRoute: "/home",
+      routerConfig: GoRouter(
+        initialLocation: '/home',
+        routes: [
+          GoRoute(
+            path: '/login',
+            builder: (context, state) => const Login(),
+          ),
+          GoRoute(
+            path: '/register',
+            builder: (context, state) => const Register(),
+          ),
+          GoRoute(
+            path: '/home',
+            builder: (context, state) => const AuthRouter(),
+          ),
+          GoRoute(
+            path: '/newgroup',
+            builder: (context, state) => const NewGroup(),
+          ),
+          GoRoute(
+            path: '/homegroup',
+            builder: (context, state) => const HomeGroup(),
+          ),
+          GoRoute(
+            path: '/configgroup',
+            builder: (context, state) => const ConfigGroup(),
+          ),
+          GoRoute(
+            path: '/addmember',
+            builder: (context, state) => AddMember(),
+          ),
+          GoRoute(
+            path: '/addfiles',
+            builder: (context, state) => const AddFiles(),
+          ),
+          GoRoute(
+            path: '/managnaipe/:id',
+            builder: (context, state) => ManagNaipe(state.pathParameters['id']!),
+          ),
+          GoRoute(
+            path: '/usersnaipe',
+            builder: (context, state) => const UsersNaipe(),
+          ),
+          GoRoute(
+            path: '/searchuser',
+            builder: (context, state) => const SearchUser(),
+          ),
+          GoRoute(
+            path: '/addnaipe',
+            builder: (context, state) => const AddNaipe(),
+          ),
+        ]
+      ),
     );
   }
 }
+
+        // "/register": (context) => Register(),
+        // "/home": (context) => AuthRouter(),
+        // "/newgroup": (context) => NewGroup(),
+        // "/homegroup": (context) => HomeGroup(),
+        // "/configgroup": (context) => ConfigGroup(),
+        // "/addmember": (context) => AddMember(),
+        // "/addfiles": (context) => AddFiles(),
+        // "/managnaipe": (context) => ManagNaipe(),
+        // "/usersnaipe": (context) => UsersNaipe(),
+        // "/searchuser": (context) => SearchUser(),
+        // "/addnaipe": (context) => AddNaipe(),
 
 MaterialColor getMaterialColor(Color color) {
   final int red = color.red;

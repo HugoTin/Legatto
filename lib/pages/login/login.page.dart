@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
 class Login extends StatefulWidget {
   const Login({super.key});
 
@@ -25,7 +26,8 @@ class _LoginState extends State<Login>{
         password: fieldPassword.text.trim(),
       );
 
-      Navigator.pushReplacementNamed(context, "/home");
+      // Navigator.pushReplacementNamed(context, "/home");
+      GoRouter.of(context).go('/home');
     }
     on FirebaseAuthException catch (ex) {
 
@@ -203,7 +205,9 @@ class _LoginState extends State<Login>{
                                   ),
                                 ),
                                 TextButton(
-                                  onPressed: () => Navigator.pushNamed(context, '/register'),
+                                  onPressed: () => 
+                                  GoRouter.of(context).go('/register'),
+                                  // Navigator.pushNamed(context, '/register'),
                                   child: const Text(
                                     'Fazer cadastro',
                                     style: TextStyle(
