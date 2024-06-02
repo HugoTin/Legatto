@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:legatto/pages/login/login.page.dart';
 import 'package:legatto/widgets/rowHome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 
 class AuthRouter extends StatelessWidget {
   const AuthRouter({super.key});
@@ -64,7 +64,7 @@ class HomePage extends StatelessWidget {
           color: Colors.black,
         ),
         onPressed: () {
-          popUpDialog(context);
+          popUpCreateGroup(context);
         },
       ),
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -119,7 +119,7 @@ popUpDialog(context) {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
-                    onPressed: () {},
+                    onPressed: () => popUpCreateGroup(context),
                     child: const Text(
                       'Criar novo grupo',
                       style: TextStyle(color: Colors.black, fontSize: 20),
@@ -144,4 +144,82 @@ popUpDialog(context) {
           ),
         );
       });
+}
+
+
+popUpCreateGroup(context){
+
+  final fieldCreateGroupName = TextEditingController();
+
+  final firestore = FirebaseFirestore.instance;
+  final user = FirebaseAuth.instance.currentUser!.uid;
+
+  createGroup(BuildContext context) async {
+
+    firestore
+    .collection('group')
+    .add({
+      'groupImage': 'LegattoLogo2.png',
+      'groupName': fieldCreateGroupName.text,
+      'membersAdmin': [ user ],
+      'membersUID': [ user ],
+      'naipes': {
+        'Clarinete': {
+          'ativo': true,
+          'usuarios': []
+        },
+        'Violino': {
+          'ativo': true,
+          'usuarios': []
+        },
+      }
+    });
+
+  }
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20.0))
+        ),
+        contentPadding: const EdgeInsets.all(0),
+        content: Container(
+          padding: const EdgeInsets.all(15),
+          child: SizedBox(
+            height: 100,
+            child: Column(
+              children: [
+                TextField(
+                  style: const TextStyle(color: Colors.black),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20.0)
+                    ),
+                    hintText: "Digite o nome do grupo",
+                    fillColor: Colors.white,
+                    filled: true,
+                    // prefixIcon: const Icon(Icons.email),
+                  ),
+                  controller: fieldCreateGroupName,
+                  keyboardType: TextInputType.text,
+                ),
+                TextButton(
+                  onPressed: () => createGroup(context),
+                  child: const Text(
+                    'Entre',
+                    style: TextStyle(
+                      color: Colors.black
+                    )
+                  )
+                )
+              ]
+            ),
+          ),
+        )
+      );
+    }
+  );
+
 }

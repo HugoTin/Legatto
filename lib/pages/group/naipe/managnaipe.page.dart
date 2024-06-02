@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:legatto/Widgets/rowNaipe.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,6 +19,11 @@ class ManagNaipe extends StatelessWidget {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            IconButton(
+              onPressed: () => GoRouter.of(context).go('/home'),
+              icon: const Icon(Icons.arrow_back)
+            ),
+            const SizedBox(width: 10),
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: SizedBox.fromSize(
@@ -51,19 +57,15 @@ class ManagNaipe extends StatelessWidget {
           
           var doc = snapshot.data!.docs.first;
 
-          List naipes = doc['naipes'];
-          // print('find12335 $naipes asd ${naipes[0].entries.first.key}');
+          Map<String, dynamic> naipes = doc['naipes'];
+          // print('find12335 $naipes asd ${naipes.keys}');
 
-          // for (var naipe in naipes) {
-          //   print('HASH $naipe ${naipe[naipe.entries.first.key]['usuarios'].length} \n');
-          // }
-
-          var listNaipes = naipes.map((naipe) => (
+          var listNaipes = naipes.keys.map((naipe) => (
             RowNaipe(
-              'images/Naipe${naipe.entries.first.key}.png',
-              naipe.entries.first.key,
-              naipe[naipe.entries.first.key]['usuarios'].length,
-              naipe[naipe.entries.first.key]['ativo']
+              'images/Naipe$naipe.png',
+              naipe,
+              naipes[naipe]['usuarios'].length,
+              naipes[naipe]['ativo']
             )
           ))
           .toList();
