@@ -37,7 +37,7 @@ class HomePage extends StatelessWidget {
 
   void _logout(BuildContext context) {
     FirebaseAuth.instance.signOut();
-    Navigator.pushReplacementNamed(context, "/login");
+    GoRouter.of(context).go("/login");
   }
 
   @override

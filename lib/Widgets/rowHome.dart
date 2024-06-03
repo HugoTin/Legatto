@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RowHome extends StatelessWidget {
   final String id;
   final String image;
   final String title;
 
-  const RowHome(this.id, this.image, this.title, {super.key});
+  RowHome(this.id, this.image, this.title, {super.key});
+
+  final firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -46,18 +49,19 @@ class RowHome extends StatelessWidget {
         ),
 
         /* Itens do PopMenuButton */
-        itemBuilder: (context) => const [
-          PopupMenuItem(
+        itemBuilder: (context) => [
+          const PopupMenuItem(
             textStyle: TextStyle(color: Colors.black),
             value: 0,
             child: Text("Silenciar grupo"),
           ),
           PopupMenuItem(
-            textStyle: TextStyle(color: Colors.black),
+            textStyle: const TextStyle(color: Colors.black),
             value: 1,
-            child: Text("Excluir Grupo"),
+            child: const Text("Excluir Grupo"),
+            onTap: () => firestore.collection('group').doc(id).delete(),
           ),
-          PopupMenuItem(
+          const PopupMenuItem(
             textStyle: TextStyle(color: Colors.black),
             value: 2,
             child: Text("Adicionar membros"),
@@ -86,7 +90,7 @@ class RowHome extends StatelessWidget {
             Container(
               padding: const EdgeInsets.fromLTRB(30, 20, 20, 10),
               child: InkWell(
-                onTap: () => Navigator.pushNamed(context, "/homegroup"),
+                onTap: () => GoRouter.of(context).go("/homegroup"),
                 child: Row(
                   children: [
                     Image.asset("images/ChatIconeHome.png"),
