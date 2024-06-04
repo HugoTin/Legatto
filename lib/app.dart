@@ -83,8 +83,8 @@ class App extends StatelessWidget {
             builder: (context, state) => const SearchUser(),
           ),
           GoRoute(
-            path: '/addnaipe',
-            builder: (context, state) => const AddNaipe(),
+            path: '/addnaipe/:id',
+            builder: (context, state) => AddNaipe(state.pathParameters['id']!),
           ),
         ]
       ),

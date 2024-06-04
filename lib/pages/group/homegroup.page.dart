@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:legatto/Widgets/popUpMenuFile.dart';
 import 'package:legatto/Widgets/popUpMenuGroup.dart';
 import 'package:legatto/Widgets/posts.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeGroup extends StatefulWidget {
   const HomeGroup({super.key});
@@ -51,6 +52,11 @@ class _HomeGroupState extends State<HomeGroup>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                IconButton(
+                  onPressed: () => GoRouter.of(context).go("/home"),
+                  icon: Icon(Icons.arrow_back)
+                ),
+                SizedBox(width: 10),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: SizedBox.fromSize(

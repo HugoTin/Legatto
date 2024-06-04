@@ -50,11 +50,11 @@ class RowHome extends StatelessWidget {
 
         /* Itens do PopMenuButton */
         itemBuilder: (context) => [
-          const PopupMenuItem(
-            textStyle: TextStyle(color: Colors.black),
-            value: 0,
-            child: Text("Silenciar grupo"),
-          ),
+          // const PopupMenuItem(
+          //   textStyle: TextStyle(color: Colors.black),
+          //   value: 0,
+          //   child: Text("Silenciar grupo"),
+          // ),
           PopupMenuItem(
             textStyle: const TextStyle(color: Colors.black),
             value: 1,

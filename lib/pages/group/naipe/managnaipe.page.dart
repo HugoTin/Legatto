@@ -16,14 +16,13 @@ class ManagNaipe extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => GoRouter.of(context).go('/home'),
+          icon: const Icon(Icons.arrow_back)
+        ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            IconButton(
-              onPressed: () => GoRouter.of(context).go('/home'),
-              icon: const Icon(Icons.arrow_back)
-            ),
-            const SizedBox(width: 10),
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: SizedBox.fromSize(
@@ -44,7 +43,7 @@ class ManagNaipe extends StatelessWidget {
           Icons.add,
           color: Colors.black,
         ),
-        onPressed: () => Navigator.pushNamed(context, '/addnaipe'),
+        onPressed: () => GoRouter.of(context).go('/addnaipe/$id'),
       ),
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         stream: firestore
@@ -58,15 +57,17 @@ class ManagNaipe extends StatelessWidget {
           var doc = snapshot.data!.docs.first;
 
           Map<String, dynamic> naipes = doc['naipes'];
-          // print('find12335 $naipes asd ${naipes.keys}');
+          print('find12335 ${doc.id} ${doc['membersAdmin'].contains(user)}');
 
           var listNaipes = naipes.keys.map((naipe) => (
-            RowNaipe(
+            naipes[naipe]['ativo'] ? RowNaipe(
+              id,
               'images/Naipe$naipe.png',
               naipe,
               naipes[naipe]['usuarios'].length,
-              naipes[naipe]['ativo']
+              doc['membersAdmin'].contains(user)
             )
+            : Container()
           ))
           .toList();
           

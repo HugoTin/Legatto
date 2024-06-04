@@ -532,12 +532,15 @@ class ConfigGroup extends StatelessWidget {
                           ),
                           SizedBox(height: 20),
                           RowNaipe(
+                              "id",
                               "images/NaipeViolino.png", "Violino", 1, true),
                           SizedBox(height: 15),
                           RowNaipe(
+                              "id",
                               "images/NaipeTrompete.png", "Trompete", 0, false),
                           SizedBox(height: 15),
                           RowNaipe(
+                              "id",
                               "images/NaipeClarinete.png", "Clarinete", 0, true)
                         ],
                       ),

@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:legatto/widgets/popUpMenuNaipe.dart';
 
 class RowNaipe extends StatelessWidget {
+  final String id;
   final String image;
   final String name;
   final int participants;
   final bool isAdmin;
 
-  const RowNaipe(this.image, this.name, this.participants, this.isAdmin, {super.key});
+  const RowNaipe(this.id, this.image, this.name, this.participants, this.isAdmin, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,7 @@ class RowNaipe extends StatelessWidget {
           const Spacer(
             flex: 100,
           ),
-          PopUpMenuNaipe(isAdmin),
+          PopUpMenuNaipe(id, isAdmin, name),
         ],
       ),
     );
