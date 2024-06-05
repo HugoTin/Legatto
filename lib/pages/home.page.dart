@@ -1,9 +1,13 @@
+import 'dart:js_interop';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:legatto/pages/login/login.page.dart';
 import 'package:legatto/widgets/rowHome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'package:legatto/enum/naipes.dart';
 
 class AuthRouter extends StatelessWidget {
   const AuthRouter({super.key});
@@ -156,6 +160,18 @@ popUpCreateGroup(context){
 
   createGroup(BuildContext context) async {
 
+    var naipes = {};
+
+    Naipes.values
+    .where((naipe) => naipe.name != 'Geral')
+    .forEach((naipe) => naipes[naipe.name] = {
+          'ativo': true,
+          'usuarios': []
+      }
+    );
+
+    print('naipesCodeso22 $naipes');
+
     firestore
     .collection('group')
     .add({
@@ -163,16 +179,7 @@ popUpCreateGroup(context){
       'groupName': fieldCreateGroupName.text,
       'membersAdmin': [ user ],
       'membersUID': [ user ],
-      'naipes': {
-        'Clarinete': {
-          'ativo': true,
-          'usuarios': []
-        },
-        'Violino': {
-          'ativo': true,
-          'usuarios': []
-        },
-      }
+      'naipes': naipes
     });
 
   }

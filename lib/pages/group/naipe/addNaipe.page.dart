@@ -7,57 +7,29 @@ import 'package:go_router/go_router.dart';
 
 import 'package:legatto/enum/naipes.dart';
 
-var rows = Naipes.values;
+var rows = Naipes.values
+.where((row) => row.name != 'Geral')
+.map((row) => row.name.toString().replaceAll('{', '').replaceAll('}', ''))
+.toList();
 var baseRows = rows;
 
 class AddNaipe extends StatefulWidget {
-  String id;
+  final String id;
 
-  AddNaipe(this.id, {super.key});
+  const AddNaipe(this.id, {super.key});
 
   @override
   _AddNaipeState createState() => _AddNaipeState(id);
 }
 
 class _AddNaipeState extends State<AddNaipe> {
-  String id;
+  final String id;
 
-  _AddNaipeState(this.id) {
+  _AddNaipeState(this.id);
 
-    asyncInit();
-
-  }
-
-  asyncInit() async {
-
-    final firestore = FirebaseFirestore.instance;
-
-    var fire = await firestore.collection('group').doc(id).get();
-
-    Map<String, dynamic>? data = fire.data();
-
-    Map<String, dynamic> naipes = data?['naipes'];
-
-    print('firefodase3 $naipes');
-    
-    print('firefodase3 $rows');
-    List<String> naipesNome = rows.map((row) => row.name.toString().replaceAll('{', '').replaceAll('}', '')).toList();
-    // String clarinete = mapa.last;
-    // print('firefodase3 ${naipes[clarinete]} $clarinete');
-
-    // rows = naipesNome
-    // .where((naipe) => naipes[naipe.name]['ativo'] == true).toList();
-
-  }
+  final firestore = FirebaseFirestore.instance;
 
   final controller = TextEditingController();
-
-  List<Widget> rowsWidgets = rows
-  .map((naipe) => (
-    naipe.name != 'Geral' 
-    ? RowAddNaipe('images/Naipe${naipe.name}.png', naipe.name, false)
-    : const SizedBox()
-  )).toList();
 
   @override
   Widget build(BuildContext context) {
@@ -79,45 +51,64 @@ class _AddNaipeState extends State<AddNaipe> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsetsDirectional.all(15),
-              color: const Color.fromRGBO(12, 12, 36, 1),
-              child: ListView.builder(
-                itemCount: rowsWidgets.length,
-                itemBuilder: (context, index) {
-                  final row = rowsWidgets[index];
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: firestore
+        .collection('group')
+        .doc(id)
+        .snapshots(),
+        builder: (context, orderSnapshot){
 
-                  return row;
-                },
+          var naipes = orderSnapshot.data!.get('naipes');
+
+          // print('docCodeso2 $naipes $rows ${naipes[rows[0]]}');
+
+          List<Widget> rowsWidgets = rows
+          .map((naipe) => (
+            naipes[naipe]?['ativo'] != true
+            ? RowAddNaipe(
+              id,
+              'images/Naipe$naipe.png',
+              naipe,
+              firestore
+            )
+            : const SizedBox()
+          )).toList();
+
+          return Column(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsetsDirectional.all(15),
+                  color: const Color.fromRGBO(12, 12, 36, 1),
+                  child: ListView(
+                    children: rowsWidgets,
+                  ),
+                ),
               ),
-            ),
-          ),
-        ],
-      ),
+            ],
+          );
+        }
+      )
     );
   }
+}
 
-  void searchMember(String query) {
-    final suggestions = baseRows.where((row) {
-      final rowTitle = row.name.toLowerCase();
-      final input = query.toLowerCase();
+void searchMember(String query) {
+  //   final suggestions = baseRows.where((row) {
+  //     final rowTitle = row.toLowerCase();
+  //     final input = query.toLowerCase();
 
-      return rowTitle.contains(input);
-    }).toList();
+  //     return rowTitle.contains(input);
+  //   }).toList();
 
-    setState(() {
-      rows = suggestions;
+  //   setState(() {
+  //     rows = suggestions;
     
-      rowsWidgets = rows
-      .map((naipe) => (
-        naipe.name != 'Geral' 
-        ? RowAddNaipe('images/Naipe${naipe.name}.png', naipe.name, false)
-        : const SizedBox()
-      )).toList();
+  //     rowsWidgets = rows
+  //     .map((naipe) => (
+  //       RowAddNaipe('images/Naipe$naipe.png', naipe, false)
+  //     )).toList();
       
-    });
-  }
+  //   });
+  // }
 }
