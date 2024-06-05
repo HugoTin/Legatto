@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:go_router/go_router.dart';
 import 'package:info_popup/info_popup.dart';
 
 class NewGroup extends StatelessWidget {
@@ -7,13 +8,17 @@ class NewGroup extends StatelessWidget {
 
   void _onEntry(BuildContext context) {
     //Adicionar o usuário a um grupo
-    Navigator.pop(context);
+    GoRouter.of(context).go("/home");
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => GoRouter.of(context).go("/home"),
+          ),
           title: Text("Entrar em um grupo"),
         ),
         body: Container(
