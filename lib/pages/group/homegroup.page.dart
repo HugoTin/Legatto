@@ -223,22 +223,27 @@ class _RowPDF extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => _openFile(context, nameFile, filePath),
-      child: SizedBox(
-        height: 60,
-        child: Row(
-          children: [
-            Image.asset("images/PDF.png", height: 50, width: 50),
-            SizedBox(width: 10),
-            Text(
-              nameFile,
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-            Spacer(flex: 100),
-            PopUpMenuFile(isAdmin)
-          ],
+    return SizedBox(
+      height: 60,
+      child: ListTile(
+        onTap: () => _openFile(context, nameFile, filePath),
+        leading: nameFile.contains('.pdf')
+            ? Icon(
+                Icons.picture_as_pdf,
+                color: Colors.white,
+                size: 45,
+              )
+            : Icon(
+                Icons.image,
+                color: Colors.white,
+                size: 45,
+              ),
+        title: Text(
+          nameFile,
+          style: TextStyle(color: Colors.white, fontSize: 20),
+          overflow: TextOverflow.ellipsis,
         ),
+        trailing: PopUpMenuFile(isAdmin),
       ),
     );
   }
@@ -251,9 +256,9 @@ Future<void> _openFile(context, String nameFile, String filePath) async {
 
   try {
     // Verifica e solicita permissão de armazenamento
-    var status = await Permission.storage.status;
+    var status = await Permission.manageExternalStorage.status;
     if (!status.isGranted) {
-      status = await Permission.storage.request();
+      status = await Permission.manageExternalStorage.request();
       if (!status.isGranted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Permissão de armazenamento negada')),
@@ -289,9 +294,9 @@ Future<void> _downloadFile(context, String nameFile, String filePath) async {
 
   try {
     // Verifica e solicita permissão de armazenamento
-    var status = await Permission.storage.status;
+    var status = await Permission.manageExternalStorage.status;
     if (!status.isGranted) {
-      status = await Permission.storage.request();
+      status = await Permission.manageExternalStorage.request();
       if (!status.isGranted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Permissão de armazenamento negada')),
