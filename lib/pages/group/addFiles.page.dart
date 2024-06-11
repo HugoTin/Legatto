@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,15 +14,11 @@ class AddFiles extends StatefulWidget {
 }
 
 class _AddFiles extends State<AddFiles> {
-  // Mapa utilizado para armazenar os arquivos a serem enviados
-  // A primeira String chave representa o nome dos naipes
-  // O mapa de segundo nível contém como chave o nome dos arquivos e em seguida uma lista contendo o widget que representa o arquivo na tela
   Map<String, Map<String, List<dynamic>>> uploadedFiles = {
     'naipe': {'fileNames': [], 'widgetFiles': [], 'files': []}
   };
 
   _AddFiles() {
-    // Percorrendo a lista de naipes disponíveis no grupo para montar as caixas de upload
     for (var element in Naipes.values) {
       uploadedFiles[element.name] = {
         'fileNames': [],
@@ -34,10 +28,8 @@ class _AddFiles extends State<AddFiles> {
     }
   }
 
-  // Declarando a lista de Widgets que será usada para montar a tela
   List<Widget> naipes = [];
 
-  // Widgets de upload para cada naipe
   List<Widget> _listNaipes() {
     naipes = [];
 
@@ -68,7 +60,6 @@ class _AddFiles extends State<AddFiles> {
                     onPressed: () => _openFileUploader(element.name),
                     child: Container(
                         padding: const EdgeInsets.all(10),
-                        // alignment: Alignment.centerRight,
                         decoration: const BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(15)),
@@ -131,7 +122,6 @@ class _AddFiles extends State<AddFiles> {
     return naipes;
   }
 
-  // Método que será usado para selecionar os arquivos no dispositivo
   _openFileUploader(naipe) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -142,9 +132,7 @@ class _AddFiles extends State<AddFiles> {
       List<PlatformFile> files = result.files;
       for (var file in files) {
         late Widget add;
-        // Obter o index do arquivo
         int index = uploadedFiles[naipe]?['widgetFiles']?.length ?? 0;
-        // Ao adicionar o arquivo, será colocado uma row contendo as informações do arquivo no respectivo naipe
         add = ListTile(
             leading: file.name.contains('.pdf')
                 ? Icon(
@@ -159,7 +147,7 @@ class _AddFiles extends State<AddFiles> {
                   ),
             title: Text(file.name, overflow: TextOverflow.ellipsis),
             trailing: TextButton(
-                onPressed: () => _deleteFile(naipe, add),
+                onPressed: () => _deleteFile(naipe, file.name),
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
                   decoration: const BoxDecoration(
@@ -173,7 +161,6 @@ class _AddFiles extends State<AddFiles> {
                     ),
                   ),
                 )));
-        // SetState para adicionar o arquivo ao mapa contendo os arquivos
         setState(() {
           uploadedFiles[naipe]?['fileNames']?.add(file.name);
           uploadedFiles[naipe]?['widgetFiles']?.add(add);
@@ -185,67 +172,69 @@ class _AddFiles extends State<AddFiles> {
     }
   }
 
-  // Método que será usado para excluir o arquivo selecionado
-  // Método que será usado para excluir o arquivo selecionado
-  _deleteFile(naipe, Widget widget) {
+  _deleteFile(String naipe, String fileName) {
     setState(() {
-      // Remover o widget correspondente da lista de widgets
-      uploadedFiles[naipe]!['fileNames']!.remove((widget as ListTile).title);
-      uploadedFiles[naipe]!['widgetFiles']!.remove(widget);
-      uploadedFiles[naipe]!['files']!.removeWhere((file) =>
-          file.path == (widget as ListTile).leading.runtimeType.toString());
+      int fileIndex = uploadedFiles[naipe]!['fileNames']!.indexOf(fileName);
+      if (fileIndex != -1) {
+        uploadedFiles[naipe]!['fileNames']!.removeAt(fileIndex);
+        uploadedFiles[naipe]!['widgetFiles']!.removeAt(fileIndex);
+        uploadedFiles[naipe]!['files']!.removeAt(fileIndex);
+      }
     });
   }
 
-  // Método para enviar os arquivos ao Firebase Storage
   Future<void> _uploadFiles() async {
-    /* For passando pelos diferentes naipes */
     bool isUploading = true;
     bool isSuccess = true;
-    if (isUploading) {
-      showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (context) {
-            return Center(
-                child: CircularProgressIndicator(
-              color: Colors.white,
-            ));
-          });
-      for (var naipe in uploadedFiles.keys) {
-        List files = uploadedFiles[naipe]?['files'] ??
-            []; // Lista para pegar todos os arquivos selecionados para cada naipe
-        /* For passando pelos arquivos */
-        for (var file in files) {
-          String fileName = file.path
-              .split('/')
-              .last; // Splitando o path para pegar somente o nome do arquivo
-          try {
-            final storageRef = FirebaseStorage.instance.ref();
-            final uploadTask =
-                storageRef.child('uploads/$naipe/$fileName').putFile(file);
-            final snapshot = await uploadTask.whenComplete(() {});
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('Falha ao enviar o arquivo ${fileName}')));
-            isSuccess = false;
-            break;
+
+    bool isEmpty =
+        uploadedFiles.values.every((value) => value['files']!.isEmpty);
+
+    if (isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Nenhum arquivo selecionado')),
+      );
+    } else {
+      if (isUploading) {
+        showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (context) {
+              return Center(
+                  child: CircularProgressIndicator(
+                color: Colors.white,
+              ));
+            });
+        for (var naipe in uploadedFiles.keys) {
+          List files = uploadedFiles[naipe]?['files'] ?? [];
+          for (var file in files) {
+            String fileName = file.path.split('/').last;
+            try {
+              final storageRef = FirebaseStorage.instance.ref();
+              final uploadTask =
+                  storageRef.child('uploads/$naipe/$fileName').putFile(file);
+              await uploadTask.whenComplete(() {});
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text('Falha ao enviar o arquivo $fileName')));
+              isSuccess = false;
+              break;
+            }
           }
         }
       }
-    }
-    Navigator.of(context).pop();
-    isUploading = false;
-    if (isSuccess) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Arquivos enviados com sucesso!')));
-      GoRouter.of(context).go("/homegroup");
-    } else {
-      return;
+      Navigator.of(context).pop();
+      isUploading = false;
+      if (isSuccess) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Arquivos enviados com sucesso!')));
+        GoRouter.of(context).go("/homegroup");
+      } else {
+        return;
+      }
     }
   }
 
-  // Construindo a tela...
   @override
   Widget build(BuildContext context) {
     return Scaffold(

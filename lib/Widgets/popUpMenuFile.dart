@@ -1,9 +1,14 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class PopUpMenuFile extends StatelessWidget {
   final bool isAdmin;
+  final String filePath;
+  final VoidCallback
+      refreshCallback; // Callback para atualizar a lista de arquivos
 
-  const PopUpMenuFile(this.isAdmin, {super.key});
+  const PopUpMenuFile(this.isAdmin, this.filePath, this.refreshCallback,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -63,10 +68,26 @@ class PopUpMenuFile extends StatelessWidget {
             if (isAdmin) null;
             break;
           case 5:
-            if (isAdmin) null;
+            if (isAdmin) {
+              _deleteFile(context, filePath);
+            }
             break;
         }
       },
     );
+  }
+
+  Future<void> _deleteFile(BuildContext context, String filePath) async {
+    try {
+      await FirebaseStorage.instance.ref(filePath).delete();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Arquivo excluído com sucesso')),
+      );
+      refreshCallback();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Falha ao excluir o arquivo: $e')),
+      );
+    }
   }
 }

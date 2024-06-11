@@ -34,14 +34,21 @@ class _HomeGroupState extends State<HomeGroup>
 
   late Future<ListResult> futureFiles;
 
+  Future<void> _refreshFileList() async {
+    setState(() {
+      // TAMBÉM MUDAR O PATH AQUI!!!!!!
+      futureFiles = FirebaseStorage.instance.ref("uploads/Violino").listAll();
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     _tabController.addListener(_handleTabIndex);
 
-    // futureFiles = FirebaseStorage.instance.ref('partituras/').listAll();
-    futureFiles = FirebaseStorage.instance.ref("partituras/").listAll();
+    /* Substituir pelo path do grupo!!!!! */
+    futureFiles = FirebaseStorage.instance.ref("uploads/Violino").listAll();
   }
 
   @override
@@ -169,13 +176,17 @@ class _HomeGroupState extends State<HomeGroup>
                       if (snapshot.hasData) {
                         final files = snapshot.data!.items;
 
-                        return ListView.builder(
-                            itemCount: files.length,
-                            itemBuilder: (context, index) {
-                              final file = files[index];
+                        return RefreshIndicator(
+                          onRefresh: _refreshFileList,
+                          child: ListView.builder(
+                              itemCount: files.length,
+                              itemBuilder: (context, index) {
+                                final file = files[index];
 
-                              return _RowPDF(file.name, file.fullPath, true);
-                            });
+                                return _RowPDF(file.name, file.fullPath, true,
+                                    _refreshFileList);
+                              }),
+                        );
                       } else if (snapshot.hasError) {
                         return Center(child: Text(snapshot.error.toString()));
                       } else {
@@ -215,11 +226,14 @@ class _HomeGroupState extends State<HomeGroup>
 }
 
 class _RowPDF extends StatelessWidget {
-  late String nameFile;
-  late String filePath;
-  late bool isAdmin;
+  final String nameFile;
+  final String filePath;
+  final bool isAdmin;
+  final VoidCallback refreshCallback;
 
-  _RowPDF(this.nameFile, this.filePath, this.isAdmin, {super.key});
+  _RowPDF(this.nameFile, this.filePath, this.isAdmin, this.refreshCallback,
+      {Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -243,7 +257,7 @@ class _RowPDF extends StatelessWidget {
           style: TextStyle(color: Colors.white, fontSize: 20),
           overflow: TextOverflow.ellipsis,
         ),
-        trailing: PopUpMenuFile(isAdmin),
+        trailing: PopUpMenuFile(isAdmin, filePath, refreshCallback),
       ),
     );
   }
