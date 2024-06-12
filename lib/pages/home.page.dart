@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:legatto/pages/login/login.page.dart';
 import 'package:legatto/widgets/rowHome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:legatto/pages/profile/profilePage.dart';
 
 import 'package:legatto/enum/naipes.dart';
 
@@ -53,14 +54,15 @@ class HomePage extends StatelessWidget {
           height: 50,
         ),
         toolbarHeight: 80,
-        actions: [
-          IconButton(
-            onPressed: () => _logout(context),
-            icon: const Icon(Icons.logout),
-          )
-        ],
+        // actions: [
+        //   IconButton(
+        //     onPressed: () => _logout(context),
+        //     icon: const Icon(Icons.logout),
+        //   )
+        // ],
         centerTitle: false,
       ),
+      endDrawer: const NavigationDrawer(),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
         child: const Icon(
@@ -237,4 +239,133 @@ popUpCreateGroup(context) {
               ),
             ));
       });
+}
+
+class NavigationDrawer extends StatelessWidget {
+  const NavigationDrawer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      backgroundColor: const Color.fromRGBO(92, 45, 151, 1),
+      child: SingleChildScrollView(
+          child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          buildHeader(context),
+          buildMenuItems(context),
+        ],
+      )),
+    );
+  }
+
+  Widget buildHeader(BuildContext context) {
+    return Container(
+      color: const Color.fromRGBO(92, 45, 151, 1),
+      padding: EdgeInsets.only(
+        top: 24+ MediaQuery.of(context).padding.top,
+
+      ),
+      child: const Column(children: [
+        CircleAvatar(
+          radius: 52,
+          backgroundImage: NetworkImage("https://qph.cf2.quoracdn.net/main-qimg-7ff109f9b744a4ba97b6648fcfb0b6b5-lq"),
+        ),
+        SizedBox(height: 12),
+        Text(
+          "Willian",
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Colors.white
+          ),
+        ),
+        Text(
+          "republicachinesa@comunismo.com.br",
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.white
+          ),
+        ),
+        SizedBox(height: 12),
+      ],),
+    );
+  }
+
+  Widget buildMenuItems(BuildContext context) {
+    void logout(BuildContext context) {
+      FirebaseAuth.instance.signOut();
+      GoRouter.of(context).go("/login");
+    }
+
+    return Container(
+      color: const Color.fromRGBO(92, 45, 151, 1),
+      padding: const EdgeInsets.all(24),
+      child: Wrap(
+        runSpacing: 16,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.person, color: Colors.white),
+            title: const Text(
+              'Perfil',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => Profilepage()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings, color: Colors.white),
+            title: const Text(
+              'Configurações',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            onTap: () {
+              GoRouter.of(context).go('/settings');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.notifications, color: Colors.white),
+            title: const Text(
+              'Notificações',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            onTap: () {
+              GoRouter.of(context).go('/notifications');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.help, color: Colors.white),
+            title: const Text(
+              'Ajuda',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            onTap: () {
+              GoRouter.of(context).go('/help');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.star, color: Colors.white),
+            title: const Text(
+              'Avalie-nos',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            onTap: () {
+              GoRouter.of(context).go('/rate');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.white),
+            title: const Text(
+              'Sair',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            onTap: () {
+              logout(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
