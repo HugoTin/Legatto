@@ -53,14 +53,15 @@ class HomePage extends StatelessWidget {
           height: 50,
         ),
         toolbarHeight: 80,
-        actions: [
-          IconButton(
-            onPressed: () => _logout(context),
-            icon: const Icon(Icons.logout),
-          )
-        ],
+        // actions: [
+        //   IconButton(
+        //     onPressed: () => _logout(context),
+        //     icon: const Icon(Icons.logout),
+        //   )
+        // ],
         centerTitle: false,
       ),
+      endDrawer: const NavigationDrawer(),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
         child: const Icon(
@@ -237,4 +238,142 @@ popUpCreateGroup(context) {
               ),
             ));
       });
+}
+
+class NavigationDrawer extends StatelessWidget {
+  const NavigationDrawer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: SingleChildScrollView(
+          child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          buildHeader(context),
+          buildMenuItems(context),
+        ],
+      )),
+    );
+  }
+
+  Widget buildHeader(BuildContext context) {
+    return Container(
+      color: Colors.blue.shade800,
+      padding: EdgeInsets.only(
+        top: 24+ MediaQuery.of(context).padding.top,
+        bottom: 24,
+      ),
+      child: Column(children: const [
+        CircleAvatar(
+          radius: 52,
+          backgroundImage: NetworkImage("https://qph.cf2.quoracdn.net/main-qimg-7ff109f9b744a4ba97b6648fcfb0b6b5-lq"),
+        ),
+        SizedBox(height: 12),
+        Text(
+          "Willian",
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.bold,
+            color: Colors.black
+          ),
+        ),
+        Text(
+          "republicachinesa@comunismo.com.br",
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.black
+          ),
+        ),
+        SizedBox(height: 12),
+
+      ],),
+    );
+  }
+
+  Widget buildMenuItems(BuildContext context) {
+    void _logout(BuildContext context) {
+      FirebaseAuth.instance.signOut();
+      GoRouter.of(context).go("/login");
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(24),
+      child: Wrap(
+        runSpacing: 16,
+        children: [
+          ListTile(
+            leading: Icon(Icons.home),
+            title: Text(
+              'Home',
+              style: TextStyle(color: Colors.black),
+            ),
+            onTap: () {
+              GoRouter.of(context).go('/');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.person),
+            title: Text(
+              'Perfil',
+              style: TextStyle(color: Colors.black),
+            ),
+            onTap: () {
+              GoRouter.of(context).go('/profile');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.settings),
+            title: Text(
+              'Configurações',
+              style: TextStyle(color: Colors.black),
+            ),
+            onTap: () {
+              GoRouter.of(context).go('/settings');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.notifications),
+            title: Text(
+              'Notificações',
+              style: TextStyle(color: Colors.black),
+            ),
+            onTap: () {
+              GoRouter.of(context).go('/notifications');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.help),
+            title: Text(
+              'Ajuda',
+              style: TextStyle(color: Colors.black),
+            ),
+            onTap: () {
+              GoRouter.of(context).go('/help');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.star),
+            title: Text(
+              'Avalie-nos',
+              style: TextStyle(color: Colors.black),
+            ),
+            onTap: () {
+              GoRouter.of(context).go('/rate');
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.logout),
+            title: Text(
+              'Sair',
+              style: TextStyle(color: Colors.black),
+            ),
+            onTap: () {
+              _logout(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
