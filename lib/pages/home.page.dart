@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:legatto/pages/login/login.page.dart';
 import 'package:legatto/widgets/rowHome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:legatto/pages/profile/profilePage.dart';
 
 import 'package:legatto/enum/naipes.dart';
 
@@ -310,7 +311,7 @@ class NavigationDrawer extends StatelessWidget {
               style: TextStyle(color: Colors.white, fontSize: 16),
             ),
             onTap: () {
-              GoRouter.of(context).go('/profile');
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => Profilepage()));
             },
           ),
           ListTile(
