@@ -1,17 +1,12 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:legatto/Widgets/popUpMenuFile.dart';
 import 'package:legatto/Widgets/popUpMenuGroup.dart';
 import 'package:legatto/Widgets/posts.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:android_path_provider/android_path_provider.dart';
 import 'package:dio/dio.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -27,19 +22,8 @@ class HomeGroup extends StatefulWidget {
 class _HomeGroupState extends State<HomeGroup>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
-  void _actionButton(BuildContext context) {
-    null;
-  }
-
-  late Future<ListResult> futureFiles;
-
-  Future<void> _refreshFileList() async {
-    setState(() {
-      // TAMBÉM MUDAR O PATH AQUI!!!!!!
-      futureFiles = FirebaseStorage.instance.ref("uploads/Violino").listAll();
-    });
-  }
+  late Future<List<FileItem>> futureFiles;
+  bool isAdmin = true; // MUDAR DE ACORDO COM O USUÁRIO
 
   @override
   void initState() {
@@ -47,8 +31,29 @@ class _HomeGroupState extends State<HomeGroup>
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     _tabController.addListener(_handleTabIndex);
 
-    /* Substituir pelo path do grupo!!!!! */
-    futureFiles = FirebaseStorage.instance.ref("uploads/Violino").listAll();
+    futureFiles = _fetchFiles();
+  }
+
+  Future<List<FileItem>> _fetchFiles() async {
+    ListResult result =
+        await FirebaseStorage.instance.ref("uploads/Violino").listAll();
+    List<FileItem> files = [];
+    for (var item in result.items) {
+      var doc = await FirebaseFirestore.instance
+          .collection('files')
+          .doc(item.name)
+          .get();
+      bool isPinned = doc.exists ? doc['isPinned'] : false;
+      files.add(FileItem(item.name, item.fullPath, isPinned));
+    }
+    files.sort((a, b) => (b.isPinned ? 1 : 0).compareTo(a.isPinned ? 1 : 0));
+    return files;
+  }
+
+  Future<void> _refreshFileList() async {
+    setState(() {
+      futureFiles = _fetchFiles();
+    });
   }
 
   @override
@@ -60,6 +65,22 @@ class _HomeGroupState extends State<HomeGroup>
 
   void _handleTabIndex() {
     setState(() {});
+  }
+
+  void _togglePin(FileItem fileItem) async {
+    setState(() {
+      fileItem.isPinned = !fileItem.isPinned;
+    });
+    await FirebaseFirestore.instance
+        .collection('files')
+        .doc(fileItem.name)
+        .set({
+      'name': fileItem.name,
+      'filePath': fileItem.filePath,
+      'isPinned': fileItem.isPinned,
+    }, SetOptions(merge: true));
+
+    _refreshFileList();
   }
 
   @override
@@ -111,90 +132,98 @@ class _HomeGroupState extends State<HomeGroup>
             ],
           ),
         ),
-        body: Expanded(
-          child: Container(
-            color: Color.fromRGBO(12, 12, 36, 1),
-            // padding: EdgeInsets.all(20),
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                    image: AssetImage("images/OpacidadeBackgroundChat.png"),
-                    fit: BoxFit.fitWidth,
-                  )),
-                  child: ListView(
-                    scrollDirection: Axis.vertical,
-                    children: [
-                      Posts(
-                          'images/UsersExemplos/Fernando-Alonso.jpg',
-                          "Fernando Alonso",
-                          "21/04",
-                          "23:00",
-                          "Título da postagem",
-                          "Conteúdo da postagem",
-                          true,
-                          true),
-                      SizedBox(height: 20),
-                      Posts(
-                          'images/UsersExemplos/Pierre-Gasly.jpg',
-                          "Pierre Gasly",
-                          "21/04",
-                          "23:30",
-                          "Apresentação no dia 22/04",
-                          "Apresentação do primeiro sprint!!",
-                          false,
-                          false),
-                      SizedBox(height: 20),
-                      Posts(
-                          'images/UsersExemplos/Lando-Norris.jpg',
-                          "Lando Norris",
-                          "21/04",
-                          "23:31",
-                          "Olá a todos!",
-                          "É um prazer conhecê-los!!",
-                          true,
-                          false),
-                      SizedBox(height: 20),
-                      Posts(
-                          'images/UsersExemplos/Lance-Stroll.jpg',
-                          "Lance Stroll",
-                          "21/04",
-                          "23:35",
-                          "Boa noite!!",
-                          "Essa é minha primeira postagem",
-                          false,
-                          true),
-                    ],
-                  ),
+
+        // ABA DE POSTAGENS
+        body: Container(
+          color: Color.fromRGBO(12, 12, 36, 1),
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                  image: AssetImage("images/OpacidadeBackgroundChat.png"),
+                  fit: BoxFit.fitWidth,
+                )),
+                child: ListView(
+                  scrollDirection: Axis.vertical,
+                  children: [
+                    Posts(
+                        'images/UsersExemplos/Fernando-Alonso.jpg',
+                        "Fernando Alonso",
+                        "21/04",
+                        "23:00",
+                        "Título da postagem",
+                        "Conteúdo da postagem",
+                        true,
+                        true),
+                    SizedBox(height: 20),
+                    Posts(
+                        'images/UsersExemplos/Pierre-Gasly.jpg',
+                        "Pierre Gasly",
+                        "21/04",
+                        "23:30",
+                        "Apresentação no dia 22/04",
+                        "Apresentação do primeiro sprint!!",
+                        false,
+                        false),
+                    SizedBox(height: 20),
+                    Posts(
+                        'images/UsersExemplos/Lando-Norris.jpg',
+                        "Lando Norris",
+                        "21/04",
+                        "23:31",
+                        "Olá a todos!",
+                        "É um prazer conhecê-los!!",
+                        true,
+                        false),
+                    SizedBox(height: 20),
+                    Posts(
+                        'images/UsersExemplos/Lance-Stroll.jpg',
+                        "Lance Stroll",
+                        "21/04",
+                        "23:35",
+                        "Boa noite!!",
+                        "Essa é minha primeira postagem",
+                        false,
+                        true),
+                  ],
                 ),
-                FutureBuilder(
-                    future: futureFiles,
-                    builder: ((context, snapshot) {
-                      if (snapshot.hasData) {
-                        final files = snapshot.data!.items;
+              ),
 
-                        return RefreshIndicator(
-                          onRefresh: _refreshFileList,
-                          child: ListView.builder(
-                              itemCount: files.length,
-                              itemBuilder: (context, index) {
-                                final file = files[index];
+              // ABA ARQUIVOS
+              // CONSTRUINDO A LISTA DE ARQUIVOS DO GRUPO
+              FutureBuilder(
+                  future: futureFiles,
+                  builder: ((context, snapshot) {
+                    if (snapshot.hasData) {
+                      final files = snapshot.data!;
+                      final pinnedFiles =
+                          files.where((file) => file.isPinned).toList();
+                      final unpinnedFiles =
+                          files.where((file) => !file.isPinned).toList();
 
-                                return _RowPDF(file.name, file.fullPath, true,
-                                    _refreshFileList);
-                              }),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text(snapshot.error.toString()));
-                      } else {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                    })),
-              ],
-            ),
+                      return RefreshIndicator(
+                        onRefresh: _refreshFileList,
+                        child: ListView.builder(
+                            itemCount:
+                                pinnedFiles.length + unpinnedFiles.length,
+                            itemBuilder: (context, index) {
+                              final file = index < pinnedFiles.length
+                                  ? pinnedFiles[index]
+                                  : unpinnedFiles[index - pinnedFiles.length];
+
+                              return _RowPDF(file, isAdmin, _togglePin);
+                            }),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text(snapshot.error.toString()));
+                    } else {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  })),
+            ],
           ),
         ),
         floatingActionButton: _bottomButtons(),
@@ -202,6 +231,7 @@ class _HomeGroupState extends State<HomeGroup>
     );
   }
 
+  // ALTERANDO O FLOACTING ACTION BUTTON DEPENDENDO DA ABA
   Widget _bottomButtons() {
     return _tabController.index == 0
         ? FloatingActionButton(
@@ -225,14 +255,13 @@ class _HomeGroupState extends State<HomeGroup>
   }
 }
 
+// CLASSE PARA AS ROWS QUE MOSTRAM OS ARQUIVOS
 class _RowPDF extends StatelessWidget {
-  final String nameFile;
-  final String filePath;
+  final FileItem fileItem;
   final bool isAdmin;
-  final VoidCallback refreshCallback;
+  final ValueChanged<FileItem> onPinToggle;
 
-  _RowPDF(this.nameFile, this.filePath, this.isAdmin, this.refreshCallback,
-      {Key? key})
+  _RowPDF(this.fileItem, this.isAdmin, this.onPinToggle, {Key? key})
       : super(key: key);
 
   @override
@@ -240,36 +269,57 @@ class _RowPDF extends StatelessWidget {
     return SizedBox(
       height: 60,
       child: ListTile(
-        onTap: () => _openFile(context, nameFile, filePath),
-        leading: nameFile.contains('.pdf')
-            ? Icon(
-                Icons.picture_as_pdf,
-                color: Colors.white,
-                size: 45,
-              )
-            : Icon(
-                Icons.image,
-                color: Colors.white,
-                size: 45,
-              ),
+        onTap: () => _openFile(context, fileItem.name, fileItem.filePath),
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            fileItem.name.contains('.pdf')
+                ? Icon(
+                    Icons.picture_as_pdf,
+                    color: Colors.white,
+                    size: 45,
+                  )
+                : Icon(
+                    Icons.image,
+                    color: Colors.white,
+                    size: 45,
+                  ),
+            SizedBox(width: 10),
+            Icon(
+              fileItem.isPinned ? Icons.push_pin : null,
+              color: Colors.white,
+              size: 20,
+            ),
+          ],
+        ),
         title: Text(
-          nameFile,
+          fileItem.name,
           style: TextStyle(color: Colors.white, fontSize: 20),
           overflow: TextOverflow.ellipsis,
         ),
-        trailing: PopUpMenuFile(isAdmin, filePath, refreshCallback),
+        trailing: PopUpMenuFile(
+            isAdmin, fileItem.filePath, () => onPinToggle(fileItem)),
       ),
     );
   }
 }
 
+// CLASSE PARA OS ARQUIVOS NO STORAGE
+class FileItem {
+  String name;
+  String filePath;
+  bool isPinned;
+
+  FileItem(this.name, this.filePath, this.isPinned);
+}
+
+// FUNÇÃO PARA ABRIR ARQUIVOS
 Future<void> _openFile(context, String nameFile, String filePath) async {
   String downloadDir = await AndroidPathProvider.downloadsPath;
   String localPath = '$downloadDir/$nameFile';
   File localFile = File(localPath);
 
   try {
-    // Verifica e solicita permissão de armazenamento
     var status = await Permission.manageExternalStorage.status;
     if (!status.isGranted) {
       status = await Permission.manageExternalStorage.request();
@@ -281,9 +331,7 @@ Future<void> _openFile(context, String nameFile, String filePath) async {
       }
     }
 
-    // Verificar se o arquivo já existe
     if (await localFile.exists()) {
-      // Verifique se o arquivo pode ser aberto
       var result = await OpenFile.open(localPath);
       if (result.type != ResultType.done) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -293,8 +341,7 @@ Future<void> _openFile(context, String nameFile, String filePath) async {
       }
       return;
     }
-    ;
-    // Se o arquivo não existir, fazer o download
+
     await _downloadFile(context, nameFile, filePath);
   } catch (e) {
     print(e);
@@ -303,11 +350,11 @@ Future<void> _openFile(context, String nameFile, String filePath) async {
   }
 }
 
+// FUNÇÃO PARA DOWNLOAD DE ARQUIVOS
 Future<void> _downloadFile(context, String nameFile, String filePath) async {
   ValueNotifier<double> progressNotifier = ValueNotifier(0);
 
   try {
-    // Verifica e solicita permissão de armazenamento
     var status = await Permission.manageExternalStorage.status;
     if (!status.isGranted) {
       status = await Permission.manageExternalStorage.request();
@@ -326,7 +373,6 @@ Future<void> _downloadFile(context, String nameFile, String filePath) async {
 
     Dio dio = Dio();
 
-    // Mostrar o diálogo de progresso
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -351,7 +397,6 @@ Future<void> _downloadFile(context, String nameFile, String filePath) async {
       ),
     );
 
-    // Usar Dio para baixar o arquivo com progresso
     await dio.download(
       await ref.getDownloadURL(),
       localPath,
@@ -362,16 +407,15 @@ Future<void> _downloadFile(context, String nameFile, String filePath) async {
       },
     );
 
-    Navigator.of(context).pop(); // Fechar o diálogo de progresso
+    Navigator.of(context).pop();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Download completo: $localPath')),
     );
 
-    // Abrir o arquivo após o download
     OpenFile.open(localPath);
   } catch (e) {
-    Navigator.of(context).pop(); // Fechar o diálogo de progresso se houver erro
+    Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Falha no download: $e')),
     );

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
 
-  @override _RegisterState createState() => _RegisterState();
-
+  @override
+  _RegisterState createState() => _RegisterState();
 }
 
 class _RegisterState extends State<Register> {
-
   bool hidePassword = false;
   bool hidePasswordAgain = false;
 
@@ -18,73 +19,83 @@ class _RegisterState extends State<Register> {
   final fieldSenha = TextEditingController();
   final fieldConfirmarSenha = TextEditingController();
 
-  void _changeVisibility(){ hidePassword = !hidePassword; }
-  void _changeVisibilityAgain(){ hidePasswordAgain = !hidePasswordAgain; }
+  void _changeVisibility() {
+    setState(() {
+      hidePassword = !hidePassword;
+    });
+  }
+
+  void _changeVisibilityAgain() {
+    setState(() {
+      hidePasswordAgain = !hidePasswordAgain;
+    });
+  }
 
   Future<void> _register(BuildContext context) async {
-
     try {
-      
       String err = '';
-      final regExpSenha1 = RegExp(r'^[a-z]*$');
-      final regExpSenha2 = RegExp(r'^[A-Z]*$');
-      final regExpSenha3 = RegExp(r'^[0-9]*$');
+      final regExpSenha1 = RegExp(r'[a-z]');
+      final regExpSenha2 = RegExp(r'[A-Z]');
+      final regExpSenha3 = RegExp(r'[0-9]');
 
       fieldNome.text = fieldNome.text.trim();
       fieldEmail.text = fieldEmail.text.trim();
       fieldSenha.text = fieldSenha.text.trim();
       fieldConfirmarSenha.text = fieldConfirmarSenha.text.trim();
 
-      if(fieldSenha.text != fieldConfirmarSenha.text){
+      if (fieldSenha.text != fieldConfirmarSenha.text) {
         err = 'Senha e confirmação de senha não coincidem.';
-      }else if(fieldNome.text.length < 3){
+      } else if (fieldNome.text.length < 3) {
         err = 'Nome inválido.';
-      }else if(
-        !fieldEmail.text.contains('@') ||
-        !fieldEmail.text.substring(fieldEmail.text.indexOf('@') + 1).contains('.') || // Verificar se tem "." após o "@"
-        fieldEmail.text.substring(0, fieldEmail.text.indexOf('@')).isEmpty // Verifica se existe texto antes do "@"
-      ){
+      } else if (!fieldEmail.text.contains('@') ||
+          !fieldEmail.text
+              .substring(fieldEmail.text.indexOf('@') + 1)
+              .contains('.') ||
+          fieldEmail.text.substring(0, fieldEmail.text.indexOf('@')).isEmpty) {
         err = 'Endereço de email inválido.';
-      }else if(fieldSenha.text.length < 8){
-        err = 'Sennha inválida. Deve ter ao menos 8 caracteres.';
-      }else if(regExpSenha1.hasMatch(fieldSenha.text)){
-        err = 'Senha deve conter ao menos 1 letra minúscula';
-      }else if(regExpSenha2.hasMatch(fieldSenha.text)){
-        err = 'Senha deve conter ao menos 1 letra maiúscula';
-      }else if(regExpSenha3.hasMatch(fieldSenha.text)){
-        err = 'Senha deve conter ao menos 1 número';
+      } else if (fieldSenha.text.length < 8) {
+        err = 'Senha inválida. Deve ter ao menos 8 caracteres.';
+      } else if (!regExpSenha1.hasMatch(fieldSenha.text)) {
+        err = 'Senha deve conter ao menos 1 letra minúscula.';
+      } else if (!regExpSenha2.hasMatch(fieldSenha.text)) {
+        err = 'Senha deve conter ao menos 1 letra maiúscula.';
+      } else if (!regExpSenha3.hasMatch(fieldSenha.text)) {
+        err = 'Senha deve conter ao menos 1 número.';
       }
 
-      if(err == ''){
-
-        UserCredential createdUser = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      if (err == '') {
+        UserCredential createdUser =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: fieldEmail.text,
           password: fieldSenha.text,
         );
 
         await createdUser.user?.updateDisplayName(fieldNome.text);
 
-        Navigator.pushReplacementNamed(context, "/home");
+        // Adiciona os dados do usuário ao Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(createdUser.user?.uid)
+            .set({
+          'name': fieldNome.text,
+          'email': fieldEmail.text,
+          'profilePic': '',
+        });
 
-      }else{
-
-        ScaffoldMessenger
-          .of(context)
-          .showSnackBar(SnackBar(
+        GoRouter.of(context).go('/home');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
             content: Text(err),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
-            ),
+          ),
         );
-
       }
-
-    }
-    on FirebaseAuthException catch (ex){
-
+    } on FirebaseAuthException catch (ex) {
       String? err = ex.code;
 
-      switch(err){
+      switch (err) {
         case 'email-already-exists':
           err = 'Email já cadastrado.';
           break;
@@ -100,17 +111,15 @@ class _RegisterState extends State<Register> {
         default:
           print(err);
           err = 'Erro ao cadastrar. Tente novamente.';
-
       }
 
-      ScaffoldMessenger
-        .of(context)
-        .showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
           content: Text(err),
           backgroundColor: Colors.red,
           duration: const Duration(seconds: 3),
-          ),
-        );
+        ),
+      );
     }
   }
 
@@ -124,21 +133,23 @@ class _RegisterState extends State<Register> {
             decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('images/BackgroundInício.png'),
-                fit: BoxFit.fill
-              )
-            )
+                fit: BoxFit.fill,
+              ),
+            ),
           ),
-
           SingleChildScrollView(
             child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+              constraints:
+                  BoxConstraints(minHeight: MediaQuery.of(context).size.height),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
                     margin: EdgeInsets.fromLTRB(
                       MediaQuery.of(context).size.width * 0.025,
-                      20, 0, 0
+                      20,
+                      0,
+                      0,
                     ),
                     alignment: Alignment.centerLeft,
                     child: IconButton(
@@ -150,7 +161,7 @@ class _RegisterState extends State<Register> {
                     'CADASTRO',
                     style: TextStyle(
                       fontSize: 34,
-                      fontWeight: FontWeight.w900
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                   SizedBox(
@@ -174,7 +185,7 @@ class _RegisterState extends State<Register> {
                                 style: const TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20.0)
+                                    borderRadius: BorderRadius.circular(20.0),
                                   ),
                                   hintText: "Digite seu nome",
                                   fillColor: Colors.white,
@@ -183,8 +194,8 @@ class _RegisterState extends State<Register> {
                                 ),
                                 keyboardType: TextInputType.text,
                               ),
-                            )
-                          ]
+                            ),
+                          ],
                         ),
                         Column(
                           children: [
@@ -203,7 +214,7 @@ class _RegisterState extends State<Register> {
                                 style: const TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20.0)
+                                    borderRadius: BorderRadius.circular(20.0),
                                   ),
                                   hintText: "Digite seu email",
                                   fillColor: Colors.white,
@@ -212,8 +223,8 @@ class _RegisterState extends State<Register> {
                                 ),
                                 keyboardType: TextInputType.emailAddress,
                               ),
-                            )
-                          ]
+                            ),
+                          ],
                         ),
                         Column(
                           children: [
@@ -232,26 +243,28 @@ class _RegisterState extends State<Register> {
                                 style: const TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20.0)
+                                    borderRadius: BorderRadius.circular(20.0),
                                   ),
                                   hintText: "Digite sua senha",
                                   fillColor: Colors.white,
                                   filled: true,
                                   prefixIcon: const Icon(Icons.lock),
                                   suffixIcon: IconButton(
-                                    onPressed: () => setState(() => _changeVisibility()),
+                                    onPressed: () => _changeVisibility(),
                                     icon: Icon(
-                                      hidePassword ? Icons.visibility : Icons.visibility_off,
+                                      hidePassword
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
                                     ),
                                     padding: const EdgeInsets.only(right: 10),
-                                  )
+                                  ),
                                 ),
                                 obscureText: !hidePassword,
                               ),
-                            )
-                          ]
+                            ),
+                          ],
                         ),
-                         Column(
+                        Column(
                           children: [
                             const Align(
                               alignment: Alignment.centerLeft,
@@ -268,64 +281,66 @@ class _RegisterState extends State<Register> {
                                 style: const TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20.0)
+                                    borderRadius: BorderRadius.circular(20.0),
                                   ),
                                   hintText: "Digite a senha novamente",
                                   fillColor: Colors.white,
                                   filled: true,
                                   prefixIcon: const Icon(Icons.lock),
                                   suffixIcon: IconButton(
-                                    onPressed: () => setState(() => _changeVisibilityAgain()),
+                                    onPressed: () => _changeVisibilityAgain(),
                                     icon: Icon(
-                                      hidePasswordAgain ? Icons.visibility : Icons.visibility_off,
+                                      hidePasswordAgain
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
                                     ),
                                     padding: const EdgeInsets.only(right: 10),
-                                  )
+                                  ),
                                 ),
                                 obscureText: !hidePasswordAgain,
                               ),
-                            )
-                          ]
+                            ),
+                          ],
                         ),
-
-                        TextButton(onPressed: () => _register(context), 
+                        TextButton(
+                          onPressed: () => _register(context),
                           child: Container(
-                          margin: const EdgeInsets.only(bottom: 100),
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.6,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: null,
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
+                            margin: const EdgeInsets.only(bottom: 100),
+                            child: SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.6,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: null,
+                                style: ElevatedButton.styleFrom(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  side: const BorderSide(
+                                    width: 1.0,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                                side: const BorderSide(
-                                  width: 1.0,
-                                  color: Colors.white,
-                                )
+                                child: const Text(
+                                  'CADASTRAR',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
                               ),
-                              child: const Text(
-                                'CADASTRAR',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w800
-                                ),
-                              )
                             ),
                           ),
-                        ), 
-                      )
+                        ),
                       ],
                     ),
                   ),
                 ],
               ),
-            )
-          )
-        ]
-      )
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

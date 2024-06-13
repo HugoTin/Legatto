@@ -1,11 +1,11 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PopUpMenuFile extends StatelessWidget {
   final bool isAdmin;
   final String filePath;
-  final VoidCallback
-      refreshCallback; // Callback para atualizar a lista de arquivos
+  final Function refreshCallback; // Callback para atualizar a lista de arquivos
 
   const PopUpMenuFile(this.isAdmin, this.filePath, this.refreshCallback,
       {super.key});
@@ -23,51 +23,27 @@ class PopUpMenuFile extends StatelessWidget {
         ),
       ),
       itemBuilder: (context) => [
-        const PopupMenuItem(
-          textStyle: TextStyle(color: Colors.black),
-          value: 1,
-          child: Text("Favoritar"),
-        ),
         if (isAdmin)
           const PopupMenuItem(
             textStyle: TextStyle(color: Colors.black),
-            value: 2,
-            child: Text("Renomear"),
-          ),
-        if (isAdmin)
-          const PopupMenuItem(
-            textStyle: TextStyle(color: Colors.black),
-            value: 3,
-            child: Text("Arquivar"),
-          ),
-        if (isAdmin)
-          const PopupMenuItem(
-            textStyle: TextStyle(color: Colors.black),
-            value: 4,
+            value: 1,
             child: Text("Fixar"),
           ),
         if (isAdmin)
           const PopupMenuItem(
             textStyle: TextStyle(color: Colors.black),
-            value: 5,
+            value: 2,
             child: Text("Excluir"),
           ),
       ],
       onSelected: (value) {
         switch (value) {
           case 1:
-            null;
+            if (isAdmin) {
+              _togglePinFile(context, filePath);
+            }
             break;
           case 2:
-            if (isAdmin) null;
-            break;
-          case 3:
-            if (isAdmin) null;
-            break;
-          case 4:
-            if (isAdmin) null;
-            break;
-          case 5:
             if (isAdmin) {
               _deleteFile(context, filePath);
             }
@@ -75,6 +51,30 @@ class PopUpMenuFile extends StatelessWidget {
         }
       },
     );
+  }
+
+  Future<void> _togglePinFile(BuildContext context, String filePath) async {
+    try {
+      final docRef =
+          FirebaseFirestore.instance.collection('files').doc(filePath);
+      final docSnapshot = await docRef.get();
+
+      bool isPinned = docSnapshot.exists ? docSnapshot['isPinned'] : false;
+      await docRef.set({
+        'filePath': filePath,
+        'isPinned': !isPinned,
+      }, SetOptions(merge: true));
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(isPinned ? 'Arquivo desafixado' : 'Arquivo fixado')),
+      );
+      refreshCallback();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Falha ao fixar/desafixar o arquivo: $e')),
+      );
+    }
   }
 
   Future<void> _deleteFile(BuildContext context, String filePath) async {

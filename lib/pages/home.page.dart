@@ -1,12 +1,10 @@
-import 'dart:js_interop';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:legatto/pages/login/login.page.dart';
+import 'package:legatto/pages/profile/profilePage.dart';
 import 'package:legatto/widgets/rowHome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'package:legatto/enum/naipes.dart';
 
 class AuthRouter extends StatelessWidget {
@@ -14,22 +12,11 @@ class AuthRouter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // print('AUTH_HOME ${FirebaseAuth.instance.currentUser}');
-
     if (FirebaseAuth.instance.currentUser != null) {
       return HomePage();
     } else {
-      return const Login(); // Login
+      return const Login();
     }
-
-    // return StreamBuilder(
-    //   stream: FirebaseAuth.instance.userChanges(),
-    //   builder: (context, snapshot) {
-    //     print('Auth data ${snapshot.hasData} ${snapshot.data!.displayName}');
-    //     if(snapshot.hasData){ return const HomePage(); }
-    //     else { return const Login(); }
-    //   }
-    // );
   }
 }
 
@@ -53,14 +40,9 @@ class HomePage extends StatelessWidget {
           height: 50,
         ),
         toolbarHeight: 80,
-        actions: [
-          IconButton(
-            onPressed: () => _logout(context),
-            icon: const Icon(Icons.logout),
-          )
-        ],
         centerTitle: false,
       ),
+      endDrawer: const NavigationDrawer(),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
         child: const Icon(
@@ -93,8 +75,6 @@ class HomePage extends StatelessWidget {
                 )
                 .toList();
 
-            // print('$docs $user');
-
             return Container(
                 decoration: const BoxDecoration(
                     image: DecorationImage(
@@ -125,7 +105,7 @@ popUpDialog(context) {
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 color: Colors.white),
             padding: const EdgeInsets.all(10),
-            height: 125,
+            height: 160,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -172,8 +152,6 @@ popUpCreateGroup(context) {
     Naipes.values.where((naipe) => naipe.name != 'Geral').forEach(
         (naipe) => naipes[naipe.name] = {'ativo': true, 'usuarios': []});
 
-    print('naipesCodeso22 $naipes');
-
     firestore.collection('group').add({
       'groupImage': 'LegattoLogo2.png',
       'groupName': fieldCreateGroupName.text,
@@ -209,7 +187,6 @@ popUpCreateGroup(context) {
                           hintText: "Digite o nome do grupo",
                           fillColor: Colors.white,
                           filled: true,
-                          // prefixIcon: const Icon(Icons.email),
                         ),
                         controller: fieldCreateGroupName,
                         keyboardType: TextInputType.text,
@@ -221,7 +198,7 @@ popUpCreateGroup(context) {
                               height: 1.3, fontSize: 23, color: Colors.black),
                         ),
                         style: OutlinedButton.styleFrom(
-                            padding: EdgeInsets.fromLTRB(35, 12, 35, 12),
+                            padding: EdgeInsets.fromLTRB(25, 8, 25, 8),
                             side: BorderSide(
                               width: 1.0,
                               color: Colors.black,
@@ -237,4 +214,115 @@ popUpCreateGroup(context) {
               ),
             ));
       });
+}
+
+class NavigationDrawer extends StatelessWidget {
+  const NavigationDrawer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      backgroundColor: const Color.fromRGBO(92, 45, 151, 1),
+      child: SingleChildScrollView(
+          child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          buildHeader(context),
+          buildMenuItems(context),
+        ],
+      )),
+    );
+  }
+
+  Widget buildHeader(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser!;
+    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        var userData = snapshot.data!.data()!;
+        return Container(
+          color: const Color.fromRGBO(92, 45, 151, 1),
+          padding: EdgeInsets.only(
+            top: 24 + MediaQuery.of(context).padding.top,
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 48,
+                    backgroundImage: NetworkImage(userData['profilePic']),
+                  ),
+                  const SizedBox(width: 18),
+                  Text(
+                    userData['name'],
+                    style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 15),
+              Text(
+                userData['email'],
+                style: const TextStyle(fontSize: 16, color: Colors.white),
+              ),
+              const SizedBox(height: 12),
+              const Divider(
+                thickness: 1,
+                height: 10,
+                color: Colors.white,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget buildMenuItems(BuildContext context) {
+    void logout(BuildContext context) {
+      FirebaseAuth.instance.signOut();
+      GoRouter.of(context).go("/login");
+    }
+
+    return Container(
+      color: const Color.fromRGBO(92, 45, 151, 1),
+      padding: const EdgeInsets.all(24),
+      child: Wrap(
+        runSpacing: 16,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.person, color: Colors.white),
+            title: const Text(
+              'Perfil',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            onTap: () {
+              GoRouter.of(context).go('/profilepage');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.white),
+            title: const Text(
+              'Sair',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            onTap: () {
+              logout(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
