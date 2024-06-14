@@ -8,8 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddFiles extends StatefulWidget {
-  final String id;
-  const AddFiles(this.id, {super.key});
+  const AddFiles({super.key});
 
   @override
   _AddFiles createState() => _AddFiles();

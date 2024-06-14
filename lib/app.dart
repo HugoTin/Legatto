@@ -68,7 +68,7 @@ class App extends StatelessWidget {
         ),
         GoRoute(
           path: '/addfiles',
-          builder: (context, state) => AddFiles(state.pathParameters['id']!),
+          builder: (context, state) => AddFiles(),
         ),
         GoRoute(
           path: '/managnaipe/:id',
