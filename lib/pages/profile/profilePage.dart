@@ -4,8 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
-
   @override
   Widget build(BuildContext context) {
     final User? user = FirebaseAuth.instance.currentUser;
@@ -46,14 +44,14 @@ class ProfilePage extends StatelessWidget {
           var userData = snapshot.data!.data() as Map<String, dynamic>;
 
           return Padding(
-            padding: const EdgeInsets.fromLTRB(10, 36, 10, 36),
+            padding: const EdgeInsets.all(36.0),
             child: Column(
-              children: [
+              children: <Widget>[
                 CircleAvatar(
                   radius: 52,
                   backgroundImage: NetworkImage(userData['profilePic']),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
                 Text(
                   userData['name'],
                   style: const TextStyle(
@@ -65,17 +63,14 @@ class ProfilePage extends StatelessWidget {
                   userData['email'],
                   style: const TextStyle(fontSize: 16, color: Colors.white),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 ListTile(
-                  leading: const Icon(
-                    Icons.edit,
-                    color: Colors.white,
-                    size: 30,
-                  ),
+                  leading: const Icon(Icons.edit, color: Colors.white),
                   title: const Text(
                     'Editar Perfil',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 16,
                       color: Colors.white,
                     ),
                   ),
