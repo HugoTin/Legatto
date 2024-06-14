@@ -1,13 +1,54 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:info_popup/info_popup.dart';
 
 class NewGroup extends StatelessWidget {
-  const NewGroup({super.key});
 
-  void _onEntry(BuildContext context) {
-    //Adicionar o usuário a um grupo
+  final user = FirebaseAuth.instance.currentUser!.uid;
+  final firestore = FirebaseFirestore.instance;
+
+  Future<void> _onEntry(BuildContext context) async {
+    var groupId;
+    dynamic membersUID;
+
+    try {
+      await firestore
+          .collection("group")
+          .where("code", isEqualTo: "12TESTE12")
+          .get()
+          .then(
+        (querySnapshot) {
+          for (var docSnapshot in querySnapshot.docs) {
+            groupId = docSnapshot.id;
+            for (var memberUID in docSnapshot.data()['membersUID']) {
+              if (memberUID == user) {
+                groupId = null;
+                break;
+              }
+            }
+            if (groupId == null) {
+              break;
+            }
+            membersUID = docSnapshot.data()['membersUID'];
+          }
+        },
+        onError: (e) => null,
+      );
+      membersUID.add(user);
+
+      if (groupId != null) {
+        firestore
+            .collection("group")
+            .doc(groupId)
+            .update({"membersUID": membersUID});
+      }
+    } on Exception catch (exception) {
+      null;
+    }
+
+    // ignore: use_build_context_synchronously
     GoRouter.of(context).go("/home");
   }
 

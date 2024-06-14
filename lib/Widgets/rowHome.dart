@@ -90,7 +90,7 @@ class RowHome extends StatelessWidget {
             Container(
               padding: const EdgeInsets.fromLTRB(30, 20, 20, 10),
               child: InkWell(
-                onTap: () => GoRouter.of(context).go("/homegroup"),
+                onTap: () => GoRouter.of(context).go("/homegroup/$id"),
                 child: Row(
                   children: [
                     Image.asset("images/ChatIconeHome.png"),

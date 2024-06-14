@@ -13,7 +13,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:open_file/open_file.dart';
 
 class HomeGroup extends StatefulWidget {
-  const HomeGroup({super.key});
+  final String id;
+  const HomeGroup(this.id, {super.key});
 
   @override
   _HomeGroupState createState() => _HomeGroupState();

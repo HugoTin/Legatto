@@ -52,11 +52,11 @@ class App extends StatelessWidget {
         ),
         GoRoute(
           path: '/newgroup',
-          builder: (context, state) => const NewGroup(),
+          builder: (context, state) => NewGroup(),
         ),
         GoRoute(
-          path: '/homegroup',
-          builder: (context, state) => const HomeGroup(),
+          path: '/homegroup/:id',
+          builder: (context, state) => HomeGroup(state.pathParameters['id']!),
         ),
         GoRoute(
           path: '/configgroup',
