@@ -5,9 +5,11 @@ import 'package:legatto/enum/naipes.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddFiles extends StatefulWidget {
-  const AddFiles({super.key});
+  final String id;
+  const AddFiles(this.id, {super.key});
 
   @override
   _AddFiles createState() => _AddFiles();
@@ -30,6 +32,7 @@ class _AddFiles extends State<AddFiles> {
 
   List<Widget> naipes = [];
 
+  // WIDGET REPRESENTANDO CADA BLOCO DE NAIPE
   List<Widget> _listNaipes() {
     naipes = [];
 
@@ -122,6 +125,7 @@ class _AddFiles extends State<AddFiles> {
     return naipes;
   }
 
+  // FUNÇÃO PARA SELECIONAR ARQUIVOS E ADICIONAR À LISTA
   _openFileUploader(naipe) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -172,6 +176,7 @@ class _AddFiles extends State<AddFiles> {
     }
   }
 
+  // FUNÇÃO PARA REMOVER ARQUIVOS DA LISTA
   _deleteFile(String naipe, String fileName) {
     setState(() {
       int fileIndex = uploadedFiles[naipe]!['fileNames']!.indexOf(fileName);
@@ -183,6 +188,7 @@ class _AddFiles extends State<AddFiles> {
     });
   }
 
+  // FUNÇÃO PARA UPLOAD DOS ARQUIVOS
   Future<void> _uploadFiles() async {
     bool isUploading = true;
     bool isSuccess = true;
@@ -214,6 +220,16 @@ class _AddFiles extends State<AddFiles> {
               final uploadTask =
                   storageRef.child('uploads/$naipe/$fileName').putFile(file);
               await uploadTask.whenComplete(() {});
+
+              // Adicionar referência ao Firestore
+              await FirebaseFirestore.instance
+                  .collection('uploads/$naipe/files')
+                  .doc(fileName)
+                  .set({
+                'name': fileName,
+                'filePath': 'uploads/$naipe/$fileName',
+                'isPinned': false,
+              });
             } catch (e) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text('Falha ao enviar o arquivo $fileName')));
@@ -235,6 +251,7 @@ class _AddFiles extends State<AddFiles> {
     }
   }
 
+  // CONSTRUINDO A TELA
   @override
   Widget build(BuildContext context) {
     return Scaffold(

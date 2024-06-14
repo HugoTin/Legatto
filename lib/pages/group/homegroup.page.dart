@@ -37,11 +37,12 @@ class _HomeGroupState extends State<HomeGroup>
 
   Future<List<FileItem>> _fetchFiles() async {
     ListResult result =
+        // ALTERAR O PATH
         await FirebaseStorage.instance.ref("uploads/Violino").listAll();
     List<FileItem> files = [];
     for (var item in result.items) {
       var doc = await FirebaseFirestore.instance
-          .collection('files')
+          .collection('uploads/Violino/files')
           .doc(item.name)
           .get();
       bool isPinned = doc.exists ? doc['isPinned'] : false;
@@ -68,12 +69,13 @@ class _HomeGroupState extends State<HomeGroup>
     setState(() {});
   }
 
+  //FUNÇÃO PARA FIXAR ARQUIVOS (TAMBÉM ALTERAR O PATH)
   void _togglePin(FileItem fileItem) async {
     setState(() {
       fileItem.isPinned = !fileItem.isPinned;
     });
     await FirebaseFirestore.instance
-        .collection('files')
+        .collection('uploads/Violino/files')
         .doc(fileItem.name)
         .set({
       'name': fileItem.name,
@@ -81,6 +83,16 @@ class _HomeGroupState extends State<HomeGroup>
       'isPinned': fileItem.isPinned,
     }, SetOptions(merge: true));
 
+    _refreshFileList();
+  }
+
+  // FUNÇÃO PARA EXCLUIR ARQUIVOS (TAMBÉM ALTERAR O PATH)
+  Future<void> _deleteFile(String filePath, String fileName) async {
+    await FirebaseStorage.instance.ref(filePath).delete();
+    await FirebaseFirestore.instance
+        .collection('uploads/Violino/files')
+        .doc(fileName)
+        .delete();
     _refreshFileList();
   }
 
@@ -215,7 +227,8 @@ class _HomeGroupState extends State<HomeGroup>
                                   ? pinnedFiles[index]
                                   : unpinnedFiles[index - pinnedFiles.length];
 
-                              return _RowPDF(file, isAdmin, _togglePin);
+                              return _RowPDF(
+                                  file, isAdmin, _togglePin, _deleteFile);
                             }),
                       );
                     } else if (snapshot.hasError) {
@@ -261,8 +274,10 @@ class _RowPDF extends StatelessWidget {
   final FileItem fileItem;
   final bool isAdmin;
   final ValueChanged<FileItem> onPinToggle;
+  final Future<void> Function(String, String) onDelete;
 
-  _RowPDF(this.fileItem, this.isAdmin, this.onPinToggle, {Key? key})
+  _RowPDF(this.fileItem, this.isAdmin, this.onPinToggle, this.onDelete,
+      {Key? key})
       : super(key: key);
 
   @override
@@ -299,7 +314,10 @@ class _RowPDF extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
         ),
         trailing: PopUpMenuFile(
-            isAdmin, fileItem.filePath, () => onPinToggle(fileItem)),
+            isAdmin,
+            fileItem.filePath,
+            () => onPinToggle(fileItem),
+            () => onDelete(fileItem.filePath, fileItem.name)),
       ),
     );
   }

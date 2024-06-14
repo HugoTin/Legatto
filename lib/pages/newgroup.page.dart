@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:info_popup/info_popup.dart';
 
 class NewGroup extends StatelessWidget {
-
   final user = FirebaseAuth.instance.currentUser!.uid;
   final firestore = FirebaseFirestore.instance;
 
@@ -84,17 +83,18 @@ class NewGroup extends StatelessWidget {
                           style: TextStyle(
                               height: 1, fontSize: 25, color: Colors.white))),
                   TextField(
-                      style: TextStyle(color: Colors.black),
-                      maxLength: 8,
-                      decoration: InputDecoration(
-                        hintText: "Digite o Código",
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                        filled: true,
-                        fillColor: Colors.white,
-                        counterText: "",
-                      ),
-                      keyboardType: TextInputType.number),
+                    style: TextStyle(color: Colors.black),
+                    // maxLength: 9,
+                    decoration: InputDecoration(
+                      hintText: "Digite o Código",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                      filled: true,
+                      fillColor: Colors.white,
+                      counterText: "",
+                    ),
+                    // keyboardType: TextInputType.number
+                  ),
                   Container(
                     margin: EdgeInsets.fromLTRB(0, 30, 0, 20),
                     width: 200,

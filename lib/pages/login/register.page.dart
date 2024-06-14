@@ -79,7 +79,8 @@ class _RegisterState extends State<Register> {
             .set({
           'name': fieldNome.text,
           'email': fieldEmail.text,
-          'profilePic': '',
+          'profilePic':
+              'https://firebasestorage.googleapis.com/v0/b/legattofatec.appspot.com/o/profileImages%2Fdefault_profile.png?alt=media&token=18d8aeda-b860-4294-9df7-93e7b50a999b',
         });
 
         GoRouter.of(context).go('/home');

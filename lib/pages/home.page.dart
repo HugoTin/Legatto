@@ -263,7 +263,9 @@ class NavigationDrawer extends StatelessWidget {
                   ),
                   const SizedBox(width: 18),
                   Text(
-                    userData['name'],
+                    userData['name'].split(" ").elementAt(0),
+                    softWrap: true,
+                    overflow: TextOverflow.clip,
                     style: const TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -302,20 +304,20 @@ class NavigationDrawer extends StatelessWidget {
         runSpacing: 16,
         children: [
           ListTile(
-            leading: const Icon(Icons.person, color: Colors.white),
+            leading: const Icon(Icons.person, color: Colors.white, size: 30),
             title: const Text(
               'Perfil',
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(color: Colors.white, fontSize: 20),
             ),
             onTap: () {
               GoRouter.of(context).go('/profilepage');
             },
           ),
           ListTile(
-            leading: const Icon(Icons.logout, color: Colors.white),
+            leading: const Icon(Icons.logout, color: Colors.white, size: 30),
             title: const Text(
               'Sair',
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(color: Colors.white, fontSize: 20),
             ),
             onTap: () {
               logout(context);
