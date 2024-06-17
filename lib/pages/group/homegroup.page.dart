@@ -20,15 +20,20 @@ class HomeGroup extends StatefulWidget {
   _HomeGroupState createState() => _HomeGroupState();
 }
 
-class _HomeGroupState extends State<HomeGroup>
-    with SingleTickerProviderStateMixin {
+class _HomeGroupState extends State<HomeGroup> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late Future<List<FileItem>> futureFiles;
   bool isAdmin = true; // MUDAR DE ACORDO COM O USUÁRIO
 
+  final firestore = FirebaseFirestore.instance;
+  var id;
+
   @override
   void initState() {
     super.initState();
+
+    id = widget.id;
+
     _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
     _tabController.addListener(_handleTabIndex);
 
@@ -109,33 +114,33 @@ class _HomeGroupState extends State<HomeGroup>
               children: [
                 IconButton(
                     onPressed: () => GoRouter.of(context).go("/home"),
-                    icon: Icon(Icons.arrow_back)),
-                SizedBox(width: 10),
+                    icon: const Icon(Icons.arrow_back)),
+                const SizedBox(width: 10),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: SizedBox.fromSize(
-                    size: Size.fromRadius(18),
+                    size: const Size.fromRadius(18),
                     child: Image.asset(
                       "images/logo-osrp.jpeg",
                     ),
                   ),
                 ),
-                SizedBox(width: 10),
-                Text("Orquestra Sinfônica")
+                const SizedBox(width: 10),
+                const Text("Orquestra Sinfônica")
               ],
             ),
           ),
-          actions: [
+          actions: const [
             PopUpMenuGroup(),
           ],
           bottom: TabBar(
-            indicatorColor: Color.fromRGBO(151, 71, 255, 1),
+            indicatorColor: const Color.fromRGBO(151, 71, 255, 1),
             indicatorWeight: 4,
-            indicatorPadding: EdgeInsets.fromLTRB(70, 0, 70, 0),
-            labelColor: Color.fromRGBO(151, 71, 255, 1),
+            indicatorPadding: const EdgeInsets.fromLTRB(70, 0, 70, 0),
+            labelColor: const Color.fromRGBO(151, 71, 255, 1),
             unselectedLabelColor: Colors.white,
             controller: _tabController,
-            tabs: [
+            tabs: const [
               Tab(
                 text: "Chat",
               ),
@@ -147,61 +152,45 @@ class _HomeGroupState extends State<HomeGroup>
         ),
 
         // ABA DE POSTAGENS
-        body: Container(
-          color: Color.fromRGBO(12, 12, 36, 1),
+        body:  StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+          stream: firestore
+              .collection('posts')
+              .where('groupID', isEqualTo: id)
+              .snapshots(),
+          builder: (context, snapshot){ 
+
+          if(!snapshot.hasData) return const SizedBox(height: 20, width: 20);
+
+          List<dynamic> posts = snapshot.data!.docs.first['main'];
+
+            List<Widget> postsWidgets = posts.map((post) => 
+              Posts(
+                'images/UsersExemplos/Fernando-Alonso.jpg',
+                post['user'],
+                post['date'].split(' ')[0],
+                post['date'].split(' ')[1],
+                post['title'],
+                post['content'],
+                true,
+                true
+              )
+            ).toList();
+          
+          return Container(
+          color: const Color.fromRGBO(12, 12, 36, 1),
           child: TabBarView(
             controller: _tabController,
             children: [
               Container(
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
+                padding: const EdgeInsets.all(20),
+                decoration: const BoxDecoration(
                     image: DecorationImage(
                   image: AssetImage("images/OpacidadeBackgroundChat.png"),
                   fit: BoxFit.fitWidth,
                 )),
                 child: ListView(
                   scrollDirection: Axis.vertical,
-                  children: [
-                    Posts(
-                        'images/UsersExemplos/Fernando-Alonso.jpg',
-                        "Fernando Alonso",
-                        "21/04",
-                        "23:00",
-                        "Título da postagem",
-                        "Conteúdo da postagem",
-                        true,
-                        true),
-                    SizedBox(height: 20),
-                    Posts(
-                        'images/UsersExemplos/Pierre-Gasly.jpg',
-                        "Pierre Gasly",
-                        "21/04",
-                        "23:30",
-                        "Apresentação no dia 22/04",
-                        "Apresentação do primeiro sprint!!",
-                        false,
-                        false),
-                    SizedBox(height: 20),
-                    Posts(
-                        'images/UsersExemplos/Lando-Norris.jpg',
-                        "Lando Norris",
-                        "21/04",
-                        "23:31",
-                        "Olá a todos!",
-                        "É um prazer conhecê-los!!",
-                        true,
-                        false),
-                    SizedBox(height: 20),
-                    Posts(
-                        'images/UsersExemplos/Lance-Stroll.jpg',
-                        "Lance Stroll",
-                        "21/04",
-                        "23:35",
-                        "Boa noite!!",
-                        "Essa é minha primeira postagem",
-                        false,
-                        true),
-                  ],
+                  children: postsWidgets
                 ),
               ),
 
@@ -239,10 +228,11 @@ class _HomeGroupState extends State<HomeGroup>
                   })),
             ],
           ),
-        ),
-        floatingActionButton: _bottomButtons(),
+        );
+        // floatingActionButton: _bottomButtons();
+        }
       ),
-    );
+    ));
   }
 
   // ALTERANDO O FLOACTING ACTION BUTTON DEPENDENDO DA ABA
@@ -251,7 +241,7 @@ class _HomeGroupState extends State<HomeGroup>
         ? FloatingActionButton(
             onPressed: () {},
             backgroundColor: Colors.white,
-            child: Icon(
+            child: const Icon(
               Icons.add_comment_rounded,
               color: Colors.black,
               size: 30,
@@ -260,7 +250,7 @@ class _HomeGroupState extends State<HomeGroup>
         : FloatingActionButton(
             onPressed: () => GoRouter.of(context).go("/addfiles"),
             backgroundColor: Colors.white,
-            child: Icon(
+            child: const Icon(
               Icons.note_add_rounded,
               color: Colors.black,
               size: 30,
@@ -276,9 +266,8 @@ class _RowPDF extends StatelessWidget {
   final ValueChanged<FileItem> onPinToggle;
   final Future<void> Function(String, String) onDelete;
 
-  _RowPDF(this.fileItem, this.isAdmin, this.onPinToggle, this.onDelete,
-      {Key? key})
-      : super(key: key);
+  const _RowPDF(this.fileItem, this.isAdmin, this.onPinToggle, this.onDelete,
+      {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -290,17 +279,17 @@ class _RowPDF extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             fileItem.name.contains('.pdf')
-                ? Icon(
+                ? const Icon(
                     Icons.picture_as_pdf,
                     color: Colors.white,
                     size: 45,
                   )
-                : Icon(
+                : const Icon(
                     Icons.image,
                     color: Colors.white,
                     size: 45,
                   ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Icon(
               fileItem.isPinned ? Icons.push_pin : null,
               color: Colors.white,
@@ -310,7 +299,7 @@ class _RowPDF extends StatelessWidget {
         ),
         title: Text(
           fileItem.name,
-          style: TextStyle(color: Colors.white, fontSize: 20),
+          style: const TextStyle(color: Colors.white, fontSize: 20),
           overflow: TextOverflow.ellipsis,
         ),
         trailing: PopUpMenuFile(
@@ -344,7 +333,7 @@ Future<void> _openFile(context, String nameFile, String filePath) async {
       status = await Permission.manageExternalStorage.request();
       if (!status.isGranted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Permissão de armazenamento negada')),
+          const SnackBar(content: Text('Permissão de armazenamento negada')),
         );
         return;
       }
@@ -379,7 +368,7 @@ Future<void> _downloadFile(context, String nameFile, String filePath) async {
       status = await Permission.manageExternalStorage.request();
       if (!status.isGranted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Permissão de armazenamento negada')),
+          const SnackBar(content: Text('Permissão de armazenamento negada')),
         );
         return;
       }
@@ -398,7 +387,7 @@ Future<void> _downloadFile(context, String nameFile, String filePath) async {
       builder: (context) => AlertDialog(
         title: Text(
           'Baixando $nameFile',
-          style: TextStyle(color: Colors.black),
+          style: const TextStyle(color: Colors.black),
         ),
         content: ValueListenableBuilder<double>(
           valueListenable: progressNotifier,
@@ -407,7 +396,7 @@ Future<void> _downloadFile(context, String nameFile, String filePath) async {
               mainAxisSize: MainAxisSize.min,
               children: [
                 LinearProgressIndicator(value: progress),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 Text('${(progress * 100).toStringAsFixed(0)}%'),
               ],
             );
