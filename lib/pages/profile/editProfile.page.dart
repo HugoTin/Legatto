@@ -43,7 +43,9 @@ class _EditProfileState extends State<EditProfile> {
     if (_formKey.currentState!.validate()) {
       await firestore.collection('users').doc(user.uid).update({
         'name': _nameController.text,
-        if (_imageFile != null) 'profilePic': await _uploadImage(),
+        'profilePic': _imageFile != null
+            ? await _uploadImage()
+            : 'https://firebasestorage.googleapis.com/v0/b/legattofatec.appspot.com/o/profileImages%2Fdefault_profile.png?alt=media&token=18d8aeda-b860-4294-9df7-93e7b50a999b',
       });
     }
   }
@@ -58,9 +60,58 @@ class _EditProfileState extends State<EditProfile> {
   }
 
   Future<void> _pickImage() async {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.camera_alt),
+                title: Text(
+                  'Câmera',
+                  style: TextStyle(color: Colors.black),
+                ),
+                onTap: () {
+                  _pickImageFromSource(ImageSource.camera);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('Escolher foto da galeria',
+                    style: TextStyle(color: Colors.black)),
+                onTap: () {
+                  _pickImageFromSource(ImageSource.gallery);
+                  Navigator.pop(context);
+                },
+              ),
+              if (_profileImageUrl !=
+                  'https://firebasestorage.googleapis.com/v0/b/legattofatec.appspot.com/o/profileImages%2Fdefault_profile.png?alt=media&token=18d8aeda-b860-4294-9df7-93e7b50a999b')
+                ListTile(
+                  leading: Icon(Icons.delete),
+                  title: Text('Remover foto',
+                      style: TextStyle(color: Colors.black)),
+                  onTap: () {
+                    setState(() {
+                      _imageFile = null;
+                      _profileImageUrl =
+                          'https://firebasestorage.googleapis.com/v0/b/legattofatec.appspot.com/o/profileImages%2Fdefault_profile.png?alt=media&token=18d8aeda-b860-4294-9df7-93e7b50a999b';
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _pickImageFromSource(ImageSource source) async {
     final ImagePicker _picker = ImagePicker();
-    final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile = await _picker.pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
         _imageFile = File(pickedFile.path);
@@ -83,7 +134,7 @@ class _EditProfileState extends State<EditProfile> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Container(
-              color: Color(0xFF0C0C24),
+              color: const Color(0xFF0C0C24),
               padding: const EdgeInsets.all(16.0),
               child: Form(
                 key: _formKey,
@@ -105,13 +156,11 @@ class _EditProfileState extends State<EditProfile> {
                     ),
                     const SizedBox(height: 20),
                     TextFormField(
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       controller: _nameController,
                       decoration: const InputDecoration(
                         labelText: 'Nome',
                         labelStyle: TextStyle(color: Colors.white),
-                        // fillColor: Colors.white,
-                        // filled: true,
                         focusedBorder: OutlineInputBorder(
                             borderSide:
                                 BorderSide(color: Colors.white, width: 2),
@@ -137,17 +186,17 @@ class _EditProfileState extends State<EditProfile> {
                     ),
                     const SizedBox(height: 30),
                     Container(
-                      margin: EdgeInsets.fromLTRB(0, 30, 0, 20),
+                      margin: const EdgeInsets.fromLTRB(0, 30, 0, 20),
                       width: 200,
                       height: 50,
                       child: OutlinedButton(
-                        child: Text(
+                        child: const Text(
                           "SALVAR",
                           style: TextStyle(
                               height: 1, fontSize: 20, color: Colors.white),
                         ),
                         style: OutlinedButton.styleFrom(
-                            side: BorderSide(
+                            side: const BorderSide(
                               width: 3.0,
                               color: Colors.white,
                             ),
