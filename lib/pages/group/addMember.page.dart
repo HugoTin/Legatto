@@ -1,18 +1,49 @@
+import 'dart:async';
+import 'dart:js';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/services.dart';
 
-class AddMember extends StatelessWidget {
-  AddMember({super.key});
+class AddMember extends StatefulWidget {
+  final String id;
+  const AddMember(this.id, {super.key});
+
+  @override
+  State<AddMember> createState() => _AddMemberState(id);
+}
+
+class _AddMemberState extends State<AddMember> {
+  final String id;
+  bool _isLoading = true;
+  _AddMemberState(this.id);
 
   void _onEntry(BuildContext context) {
     //Adicionar o usuário a um grupo
     Navigator.pop(context);
   }
 
+  final firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCodeGroup();
+  }
+
+  Future<void> _loadCodeGroup() async {
+    DocumentSnapshot<Map<String, dynamic>> codeGroup =
+        await firestore.collection("group").doc(id).get();
+    groupCode.text = codeGroup.data()!['code'];
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
   TextEditingController groupLink =
       TextEditingController(text: "Finja que isso é um link");
-  TextEditingController groupCode = TextEditingController(text: "12345678");
+  TextEditingController groupCode = TextEditingController();
 
   @override
   Widget build(BuildContext context) {

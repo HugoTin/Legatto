@@ -8,6 +8,8 @@ class NewGroup extends StatelessWidget {
   final user = FirebaseAuth.instance.currentUser!.uid;
   final firestore = FirebaseFirestore.instance;
 
+  final fieldGroupCode = TextEditingController();
+
   Future<void> _onEntry(BuildContext context) async {
     var groupId;
     dynamic membersUID;
@@ -15,7 +17,7 @@ class NewGroup extends StatelessWidget {
     try {
       await firestore
           .collection("group")
-          .where("code", isEqualTo: "12TESTE12")
+          .where("code", isEqualTo: fieldGroupCode.text.toUpperCase())
           .get()
           .then(
         (querySnapshot) {
@@ -93,6 +95,7 @@ class NewGroup extends StatelessWidget {
                       fillColor: Colors.white,
                       counterText: "",
                     ),
+                    controller: fieldGroupCode,
                     // keyboardType: TextInputType.number
                   ),
                   Container(

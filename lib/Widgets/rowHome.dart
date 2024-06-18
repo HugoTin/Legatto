@@ -77,7 +77,7 @@ class RowHome extends StatelessWidget {
               null;
               break;
             case 2:
-              Navigator.pushNamed(context, '/addmember');
+              GoRouter.of(context).go("/addmember/$id");
           }
         },
       ),

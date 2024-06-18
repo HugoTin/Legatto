@@ -7,6 +7,15 @@ import 'package:legatto/widgets/rowHome.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:legatto/enum/naipes.dart';
 
+import 'dart:math';
+
+const _chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+Random _rnd = Random();
+
+String getRandomString(int length) => String.fromCharCodes(Iterable.generate(
+    length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+
+
 class AuthRouter extends StatelessWidget {
   const AuthRouter({super.key});
 
@@ -146,6 +155,8 @@ popUpCreateGroup(context) {
   final firestore = FirebaseFirestore.instance;
   final user = FirebaseAuth.instance.currentUser!.uid;
 
+  final code = getRandomString(8);
+
   createGroup(BuildContext context) async {
     var naipes = {};
 
@@ -157,7 +168,8 @@ popUpCreateGroup(context) {
       'groupName': fieldCreateGroupName.text,
       'membersAdmin': [user],
       'membersUID': [user],
-      'naipes': naipes
+      'naipes': naipes,
+      'code': code
     });
   }
 

@@ -63,8 +63,8 @@ class App extends StatelessWidget {
           builder: (context, state) => const ConfigGroup(),
         ),
         GoRoute(
-          path: '/addmember',
-          builder: (context, state) => AddMember(),
+          path: '/addmember/:id',
+          builder: (context, state) => AddMember(state.pathParameters['id']!),
         ),
         GoRoute(
           path: '/addfiles',
