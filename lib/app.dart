@@ -10,6 +10,7 @@ import 'pages/home.page.dart';
 
 import 'pages/newgroup.page.dart';
 import 'pages/group/homegroup.page.dart';
+import 'pages/group/newpost.page.dart';
 import 'pages/group/configgroup.page.dart';
 import 'pages/group/addMember.page.dart';
 import 'pages/group/addFiles.page.dart';
@@ -59,6 +60,10 @@ class App extends StatelessWidget {
           builder: (context, state) => HomeGroup(state.pathParameters['id']!),
         ),
         GoRoute(
+          path: '/newpost/:id',
+          builder: (context, state) => NewPost(state.pathParameters['id']!),
+        ),
+        GoRoute(
           path: '/configgroup',
           builder: (context, state) => const ConfigGroup(),
         ),
@@ -68,7 +73,7 @@ class App extends StatelessWidget {
         ),
         GoRoute(
           path: '/addfiles',
-          builder: (context, state) => AddFiles(),
+          builder: (context, state) => const AddFiles(),
         ),
         GoRoute(
           path: '/managnaipe/:id',
@@ -88,7 +93,7 @@ class App extends StatelessWidget {
         ),
         GoRoute(
           path: '/profilepage',
-          builder: (context, state) => ProfilePage(),
+          builder: (context, state) => const ProfilePage(),
         ),
         GoRoute(
           path: '/editprofile',

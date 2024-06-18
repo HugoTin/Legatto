@@ -18,11 +18,12 @@ class Posts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.fromLTRB(0, 20, 0, 20),
       width: MediaQuery.sizeOf(context).width,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           color: Color.fromRGBO(92, 45, 151, 1),
           borderRadius: BorderRadius.all(Radius.circular(20))),
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Column(
         children: [
           Row(
@@ -30,21 +31,21 @@ class Posts extends StatelessWidget {
             children: [
               ClipOval(
                 child: SizedBox.fromSize(
-                  size: Size.fromRadius(25),
+                  size: const Size.fromRadius(25),
                   child: Image.asset(
                     userImage,
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       Text(name,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Color.fromRGBO(32, 215, 255, 1),
                             fontSize: 20,
                           )),
@@ -54,52 +55,52 @@ class Posts extends StatelessWidget {
                     children: [
                       Text(
                         day,
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                        style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 15,
                       ),
                       Text(
                         horario,
-                        style: TextStyle(color: Colors.white, fontSize: 15),
+                        style: const TextStyle(color: Colors.white, fontSize: 15),
                       ),
                     ],
                   )
                 ],
               ),
-              Spacer(flex: 100),
+              const Spacer(flex: 100),
               if (isAdmin | isSender) PopUpMenuPost(isAdmin)
             ],
           ),
-          SizedBox(height: 30),
-          Container(
+          const SizedBox(height: 30),
+          SizedBox(
             width: MediaQuery.sizeOf(context).width,
             child: Text(
               titlePost,
-              style: TextStyle(
+              style: const TextStyle(
                   color: Colors.white,
                   fontSize: 25,
                   fontWeight: FontWeight.bold),
             ),
           ),
-          SizedBox(height: 30),
-          Container(
+          const SizedBox(height: 30),
+          SizedBox(
             width: MediaQuery.sizeOf(context).width,
             child: Text(
               content,
-              style: TextStyle(color: Colors.white, fontSize: 20),
+              style: const TextStyle(color: Colors.white, fontSize: 20),
             ),
           ),
-          SizedBox(height: 25),
+          const SizedBox(height: 25),
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(20)))),
-                child: Text(
+                child: const Text(
                   "Responder",
                   style: TextStyle(color: Colors.black),
                 ),

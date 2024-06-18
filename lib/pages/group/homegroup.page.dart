@@ -163,18 +163,18 @@ class _HomeGroupState extends State<HomeGroup> with SingleTickerProviderStateMix
 
           List<dynamic> posts = snapshot.data!.docs.first['main'];
 
-            List<Widget> postsWidgets = posts.map((post) => 
-              Posts(
-                'images/UsersExemplos/Fernando-Alonso.jpg',
-                post['user'],
-                post['date'].split(' ')[0],
-                post['date'].split(' ')[1],
-                post['title'],
-                post['content'],
-                true,
-                true
-              )
-            ).toList();
+          List<Widget> postsWidgets = posts.map((post) => 
+            Posts(
+              'images/UsersExemplos/Fernando-Alonso.jpg',
+              post['user'],
+              post['date'].split(' ')[0],
+              post['date'].split(' ')[1],
+              post['title'],
+              post['content'],
+              true,
+              true
+            )
+          ).toList();
           
           return Container(
           color: const Color.fromRGBO(12, 12, 36, 1),
@@ -229,9 +229,9 @@ class _HomeGroupState extends State<HomeGroup> with SingleTickerProviderStateMix
             ],
           ),
         );
-        // floatingActionButton: _bottomButtons();
         }
       ),
+      floatingActionButton: _bottomButtons()
     ));
   }
 
@@ -239,7 +239,7 @@ class _HomeGroupState extends State<HomeGroup> with SingleTickerProviderStateMix
   Widget _bottomButtons() {
     return _tabController.index == 0
         ? FloatingActionButton(
-            onPressed: () {},
+            onPressed: () => GoRouter.of(context).go("/newpost/$id"),
             backgroundColor: Colors.white,
             child: const Icon(
               Icons.add_comment_rounded,

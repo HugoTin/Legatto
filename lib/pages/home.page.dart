@@ -106,11 +106,11 @@ popUpDialog(context) {
       builder: (context) {
         return AlertDialog(
           backgroundColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(20.0))),
           contentPadding: const EdgeInsets.all(0),
           content: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(20)),
                 color: Colors.white),
             padding: const EdgeInsets.all(10),
@@ -163,7 +163,7 @@ popUpCreateGroup(context) {
     Naipes.values.where((naipe) => naipe.name != 'Geral').forEach(
         (naipe) => naipes[naipe.name] = {'ativo': true, 'usuarios': []});
 
-    firestore.collection('group').add({
+    var group = await firestore.collection('group').add({
       'groupImage': 'LegattoLogo2.png',
       'groupName': fieldCreateGroupName.text,
       'membersAdmin': [user],
@@ -171,6 +171,19 @@ popUpCreateGroup(context) {
       'naipes': naipes,
       'code': code
     });
+
+    firestore.collection('posts').add({
+      'groupID': group.id,
+      'main': [
+        {
+          "content": "Grupo criado para organização da orquestra sinfônica.",
+          "date": "05/06 22:14",
+          "title": "Aviso geral",
+          "user": "Japa"
+        }
+      ]
+    });
+
   }
 
   showDialog(
@@ -182,7 +195,7 @@ popUpCreateGroup(context) {
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             contentPadding: const EdgeInsets.all(0),
             content: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                   color: Colors.white),
               padding: const EdgeInsets.all(15),
@@ -204,14 +217,9 @@ popUpCreateGroup(context) {
                         keyboardType: TextInputType.text,
                       ),
                       OutlinedButton(
-                        child: Text(
-                          "CRIAR",
-                          style: TextStyle(
-                              height: 1.3, fontSize: 23, color: Colors.black),
-                        ),
                         style: OutlinedButton.styleFrom(
-                            padding: EdgeInsets.fromLTRB(25, 8, 25, 8),
-                            side: BorderSide(
+                            padding: const EdgeInsets.fromLTRB(25, 8, 25, 8),
+                            side: const BorderSide(
                               width: 1.0,
                               color: Colors.black,
                             ),
@@ -221,6 +229,11 @@ popUpCreateGroup(context) {
                           createGroup(context);
                           Navigator.pop(context);
                         },
+                        child: const Text(
+                          "CRIAR",
+                          style: TextStyle(
+                              height: 1.3, fontSize: 23, color: Colors.black),
+                        ),
                       )
                     ]),
               ),
