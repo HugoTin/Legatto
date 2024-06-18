@@ -64,16 +64,16 @@ class App extends StatelessWidget {
           builder: (context, state) => NewPost(state.pathParameters['id']!),
         ),
         GoRoute(
-          path: '/configgroup',
-          builder: (context, state) => const ConfigGroup(),
+          path: '/configgroup/:id',
+          builder: (context, state) => ConfigGroup(state.pathParameters['id']!),
         ),
         GoRoute(
           path: '/addmember/:id',
           builder: (context, state) => AddMember(state.pathParameters['id']!),
         ),
         GoRoute(
-          path: '/addfiles',
-          builder: (context, state) => const AddFiles(),
+          path: '/addfiles/:id',
+          builder: (context, state) => AddFiles(state.pathParameters['id']!),
         ),
         GoRoute(
           path: '/managnaipe/:id',

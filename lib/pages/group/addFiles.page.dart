@@ -8,7 +8,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddFiles extends StatefulWidget {
-  const AddFiles({super.key});
+  final String id;
+  const AddFiles(this.id, {super.key});
 
   @override
   _AddFiles createState() => _AddFiles();
@@ -31,7 +32,6 @@ class _AddFiles extends State<AddFiles> {
 
   List<Widget> naipes = [];
 
-  // WIDGET REPRESENTANDO CADA BLOCO DE NAIPE
   List<Widget> _listNaipes() {
     naipes = [];
 
@@ -124,7 +124,6 @@ class _AddFiles extends State<AddFiles> {
     return naipes;
   }
 
-  // FUNÇÃO PARA SELECIONAR ARQUIVOS E ADICIONAR À LISTA
   _openFileUploader(naipe) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -138,12 +137,12 @@ class _AddFiles extends State<AddFiles> {
         int index = uploadedFiles[naipe]?['widgetFiles']?.length ?? 0;
         add = ListTile(
             leading: file.name.contains('.pdf')
-                ? Icon(
+                ? const Icon(
                     Icons.picture_as_pdf,
                     color: Colors.white,
                     size: 45,
                   )
-                : Icon(
+                : const Icon(
                     Icons.image,
                     color: Colors.white,
                     size: 45,
@@ -175,7 +174,6 @@ class _AddFiles extends State<AddFiles> {
     }
   }
 
-  // FUNÇÃO PARA REMOVER ARQUIVOS DA LISTA
   _deleteFile(String naipe, String fileName) {
     setState(() {
       int fileIndex = uploadedFiles[naipe]!['fileNames']!.indexOf(fileName);
@@ -187,8 +185,8 @@ class _AddFiles extends State<AddFiles> {
     });
   }
 
-  // FUNÇÃO PARA UPLOAD DOS ARQUIVOS
   Future<void> _uploadFiles() async {
+    final id = widget.id;
     bool isUploading = true;
     bool isSuccess = true;
 
@@ -197,7 +195,7 @@ class _AddFiles extends State<AddFiles> {
 
     if (isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Nenhum arquivo selecionado')),
+        const SnackBar(content: Text('Nenhum arquivo selecionado')),
       );
     } else {
       if (isUploading) {
@@ -205,7 +203,7 @@ class _AddFiles extends State<AddFiles> {
             barrierDismissible: false,
             context: context,
             builder: (context) {
-              return Center(
+              return const Center(
                   child: CircularProgressIndicator(
                 color: Colors.white,
               ));
@@ -217,21 +215,20 @@ class _AddFiles extends State<AddFiles> {
             try {
               final storageRef = FirebaseStorage.instance.ref();
               final uploadTask =
-                  storageRef.child('uploads/$naipe/$fileName').putFile(file);
+                  storageRef.child('uploads/$id/$fileName').putFile(file);
               await uploadTask.whenComplete(() {});
 
-              // Adicionar referência ao Firestore
               await FirebaseFirestore.instance
-                  .collection('uploads/$naipe/files')
+                  .collection('uploads/$id/$fileName')
                   .doc(fileName)
                   .set({
                 'name': fileName,
-                'filePath': 'uploads/$naipe/$fileName',
+                'filePath': 'uploads/$id/$fileName',
                 'isPinned': false,
               });
             } catch (e) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text('Falha ao enviar o arquivo $fileName')));
+                  content: Text('Falha ao enviar o arquivo $fileName, ($e)')));
               isSuccess = false;
               break;
             }
@@ -242,15 +239,14 @@ class _AddFiles extends State<AddFiles> {
       isUploading = false;
       if (isSuccess) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Arquivos enviados com sucesso!')));
-        GoRouter.of(context).go("/homegroup");
+            const SnackBar(content: Text('Arquivos enviados com sucesso!')));
+        GoRouter.of(context).go('/homegroup/${widget.id}');
       } else {
         return;
       }
     }
   }
 
-  // CONSTRUINDO A TELA
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -258,9 +254,10 @@ class _AddFiles extends State<AddFiles> {
         title: Row(
           children: [
             TextButton(
-                onPressed: () => GoRouter.of(context).go("/homegroup"),
+                onPressed: () =>
+                    GoRouter.of(context).go('/homegroup/${widget.id}'),
                 child: const Icon(Icons.arrow_back_sharp)),
-            const Text("Adicionar Arquivos"),
+            const Text('Adicionar Arquivos'),
           ],
         ),
       ),
@@ -268,7 +265,7 @@ class _AddFiles extends State<AddFiles> {
         padding: const EdgeInsets.all(15),
         decoration: const BoxDecoration(
             image: DecorationImage(
-          image: AssetImage("images/HomeBackground.png"),
+          image: AssetImage('images/HomeBackground.png'),
           fit: BoxFit.fill,
         )),
         child: ListView(

@@ -20,10 +20,13 @@ class HomeGroup extends StatefulWidget {
   _HomeGroupState createState() => _HomeGroupState();
 }
 
-class _HomeGroupState extends State<HomeGroup> with SingleTickerProviderStateMixin {
+class _HomeGroupState extends State<HomeGroup>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late Future<List<FileItem>> futureFiles;
   bool isAdmin = true; // MUDAR DE ACORDO COM O USUÁRIO
+  String groupName = '';
+  String groupImage = '';
 
   final firestore = FirebaseFirestore.instance;
   var id;
@@ -38,16 +41,18 @@ class _HomeGroupState extends State<HomeGroup> with SingleTickerProviderStateMix
     _tabController.addListener(_handleTabIndex);
 
     futureFiles = _fetchFiles();
+    _fetchGroupDetails();
   }
 
   Future<List<FileItem>> _fetchFiles() async {
     ListResult result =
-        // ALTERAR O PATH
-        await FirebaseStorage.instance.ref("uploads/Violino").listAll();
+        await FirebaseStorage.instance.ref("uploads/$id").listAll();
     List<FileItem> files = [];
     for (var item in result.items) {
       var doc = await FirebaseFirestore.instance
-          .collection('uploads/Violino/files')
+          .collection('uploads')
+          .doc(id)
+          .collection(item.name)
           .doc(item.name)
           .get();
       bool isPinned = doc.exists ? doc['isPinned'] : false;
@@ -55,6 +60,22 @@ class _HomeGroupState extends State<HomeGroup> with SingleTickerProviderStateMix
     }
     files.sort((a, b) => (b.isPinned ? 1 : 0).compareTo(a.isPinned ? 1 : 0));
     return files;
+  }
+
+  Future<void> _fetchGroupDetails() async {
+    try {
+      DocumentSnapshot groupDoc =
+          await FirebaseFirestore.instance.collection('group').doc(id).get();
+
+      if (groupDoc.exists) {
+        setState(() {
+          groupName = groupDoc['groupName'];
+          groupImage = groupDoc['groupImage'];
+        });
+      }
+    } catch (e) {
+      print('Erro ao buscar detalhes do grupo: $e');
+    }
   }
 
   Future<void> _refreshFileList() async {
@@ -79,163 +100,183 @@ class _HomeGroupState extends State<HomeGroup> with SingleTickerProviderStateMix
     setState(() {
       fileItem.isPinned = !fileItem.isPinned;
     });
-    await FirebaseFirestore.instance
-        .collection('uploads/Violino/files')
-        .doc(fileItem.name)
-        .set({
-      'name': fileItem.name,
-      'filePath': fileItem.filePath,
-      'isPinned': fileItem.isPinned,
-    }, SetOptions(merge: true));
-
+    try {
+      await FirebaseFirestore.instance
+          .collection('uploads')
+          .doc(id)
+          .collection(fileItem.name)
+          .doc(fileItem.name)
+          .set({
+        'name': fileItem.name,
+        'filePath': fileItem.filePath,
+        'isPinned': fileItem.isPinned,
+      }, SetOptions(merge: true));
+      print('Pin status updated for ${fileItem.name}');
+    } catch (e) {
+      print('Error updating pin status: $e');
+    }
     _refreshFileList();
   }
 
   // FUNÇÃO PARA EXCLUIR ARQUIVOS (TAMBÉM ALTERAR O PATH)
   Future<void> _deleteFile(String filePath, String fileName) async {
-    await FirebaseStorage.instance.ref(filePath).delete();
-    await FirebaseFirestore.instance
-        .collection('uploads/Violino/files')
-        .doc(fileName)
-        .delete();
-    _refreshFileList();
+    try {
+      await FirebaseStorage.instance.ref(filePath).delete();
+      print('File deleted from storage: $filePath');
+
+      await FirebaseFirestore.instance
+          .collection('uploads')
+          .doc(id)
+          .collection(fileName)
+          .doc(fileName)
+          .delete();
+      print('File document deleted from Firestore: $fileName');
+
+      _refreshFileList();
+      print('File list refreshed');
+    } catch (e) {
+      print('Erro ao excluir arquivo: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      top: false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: InkWell(
-            onTap: () => GoRouter.of(context).go("/configgroup"),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                IconButton(
-                    onPressed: () => GoRouter.of(context).go("/home"),
-                    icon: const Icon(Icons.arrow_back)),
-                const SizedBox(width: 10),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: SizedBox.fromSize(
-                    size: const Size.fromRadius(18),
-                    child: Image.asset(
-                      "images/logo-osrp.jpeg",
+        top: false,
+        child: Scaffold(
+            appBar: AppBar(
+              title: InkWell(
+                onTap: () => GoRouter.of(context).go("/configgroup/$id"),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    IconButton(
+                        onPressed: () => GoRouter.of(context).go("/home"),
+                        icon: const Icon(Icons.arrow_back)),
+                    const SizedBox(width: 10),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: SizedBox.fromSize(
+                        size: const Size.fromRadius(18),
+                        child: Image.asset(
+                          "images/$groupImage",
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 10),
+                    Text(groupName)
+                  ],
                 ),
-                const SizedBox(width: 10),
-                const Text("Orquestra Sinfônica")
+              ),
+              actions: const [
+                PopUpMenuGroup(),
               ],
+              bottom: TabBar(
+                indicatorColor: const Color.fromRGBO(151, 71, 255, 1),
+                indicatorWeight: 4,
+                indicatorPadding: const EdgeInsets.fromLTRB(70, 0, 70, 0),
+                labelColor: const Color.fromRGBO(151, 71, 255, 1),
+                unselectedLabelColor: Colors.white,
+                controller: _tabController,
+                tabs: const [
+                  Tab(
+                    text: "Chat",
+                  ),
+                  Tab(
+                    text: "Partituras",
+                  ),
+                ],
+              ),
             ),
-          ),
-          actions: const [
-            PopUpMenuGroup(),
-          ],
-          bottom: TabBar(
-            indicatorColor: const Color.fromRGBO(151, 71, 255, 1),
-            indicatorWeight: 4,
-            indicatorPadding: const EdgeInsets.fromLTRB(70, 0, 70, 0),
-            labelColor: const Color.fromRGBO(151, 71, 255, 1),
-            unselectedLabelColor: Colors.white,
-            controller: _tabController,
-            tabs: const [
-              Tab(
-                text: "Chat",
-              ),
-              Tab(
-                text: "Partituras",
-              ),
-            ],
-          ),
-        ),
 
-        // ABA DE POSTAGENS
-        body:  StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: firestore
-              .collection('posts')
-              .where('groupID', isEqualTo: id)
-              .snapshots(),
-          builder: (context, snapshot){ 
+            // ABA DE POSTAGENS
+            body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+                stream: firestore
+                    .collection('posts')
+                    .where('groupID', isEqualTo: id)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const SizedBox(height: 20, width: 20);
+                  }
 
-          if(!snapshot.hasData) return const SizedBox(height: 20, width: 20);
+                  List<dynamic> posts = snapshot.data!.docs.first['main'];
 
-          List<dynamic> posts = snapshot.data!.docs.first['main'];
+                  List<Widget> postsWidgets = posts
+                      .map((post) => Posts(
+                          'images/UsersExemplos/Fernando-Alonso.jpg',
+                          post['user'],
+                          post['date'].split(' ')[0],
+                          post['date'].split(' ')[1],
+                          post['title'],
+                          post['content'],
+                          true,
+                          true))
+                      .toList();
 
-          List<Widget> postsWidgets = posts.map((post) => 
-            Posts(
-              'images/UsersExemplos/Fernando-Alonso.jpg',
-              post['user'],
-              post['date'].split(' ')[0],
-              post['date'].split(' ')[1],
-              post['title'],
-              post['content'],
-              true,
-              true
-            )
-          ).toList();
-          
-          return Container(
-          color: const Color.fromRGBO(12, 12, 36, 1),
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                  image: AssetImage("images/OpacidadeBackgroundChat.png"),
-                  fit: BoxFit.fitWidth,
-                )),
-                child: ListView(
-                  scrollDirection: Axis.vertical,
-                  children: postsWidgets
-                ),
-              ),
+                  return Container(
+                    color: const Color.fromRGBO(12, 12, 36, 1),
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: const BoxDecoration(
+                              image: DecorationImage(
+                            image: AssetImage(
+                                "images/OpacidadeBackgroundChat.png"),
+                            fit: BoxFit.fitWidth,
+                          )),
+                          child: ListView(
+                              scrollDirection: Axis.vertical,
+                              children: postsWidgets),
+                        ),
 
-              // ABA ARQUIVOS
-              // CONSTRUINDO A LISTA DE ARQUIVOS DO GRUPO
-              FutureBuilder(
-                  future: futureFiles,
-                  builder: ((context, snapshot) {
-                    if (snapshot.hasData) {
-                      final files = snapshot.data!;
-                      final pinnedFiles =
-                          files.where((file) => file.isPinned).toList();
-                      final unpinnedFiles =
-                          files.where((file) => !file.isPinned).toList();
+                        // ABA ARQUIVOS
+                        // CONSTRUINDO A LISTA DE ARQUIVOS DO GRUPO
+                        FutureBuilder(
+                            future: futureFiles,
+                            builder: ((context, snapshot) {
+                              if (snapshot.hasData) {
+                                final files = snapshot.data!;
+                                final pinnedFiles = files
+                                    .where((file) => file.isPinned)
+                                    .toList();
+                                final unpinnedFiles = files
+                                    .where((file) => !file.isPinned)
+                                    .toList();
 
-                      return RefreshIndicator(
-                        onRefresh: _refreshFileList,
-                        child: ListView.builder(
-                            itemCount:
-                                pinnedFiles.length + unpinnedFiles.length,
-                            itemBuilder: (context, index) {
-                              final file = index < pinnedFiles.length
-                                  ? pinnedFiles[index]
-                                  : unpinnedFiles[index - pinnedFiles.length];
+                                return RefreshIndicator(
+                                  onRefresh: _refreshFileList,
+                                  child: ListView.builder(
+                                      itemCount: pinnedFiles.length +
+                                          unpinnedFiles.length,
+                                      itemBuilder: (context, index) {
+                                        final file = index < pinnedFiles.length
+                                            ? pinnedFiles[index]
+                                            : unpinnedFiles[
+                                                index - pinnedFiles.length];
 
-                              return _RowPDF(
-                                  file, isAdmin, _togglePin, _deleteFile);
-                            }),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text(snapshot.error.toString()));
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  })),
-            ],
-          ),
-        );
-        }
-      ),
-      floatingActionButton: _bottomButtons()
-    ));
+                                        return _RowPDF(file, isAdmin,
+                                            _togglePin, _deleteFile);
+                                      }),
+                                );
+                              } else if (snapshot.hasError) {
+                                return Center(
+                                    child: Text(snapshot.error.toString()));
+                              } else {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              }
+                            })),
+                      ],
+                    ),
+                  );
+                }),
+            floatingActionButton: _bottomButtons()));
   }
 
-  // ALTERANDO O FLOACTING ACTION BUTTON DEPENDENDO DA ABA
+  // ALTERANDO O FLOATING ACTION BUTTON DEPENDENDO DA ABA
   Widget _bottomButtons() {
     return _tabController.index == 0
         ? FloatingActionButton(
@@ -248,7 +289,7 @@ class _HomeGroupState extends State<HomeGroup> with SingleTickerProviderStateMix
             ),
           )
         : FloatingActionButton(
-            onPressed: () => GoRouter.of(context).go("/addfiles"),
+            onPressed: () => GoRouter.of(context).go("/addfiles/$id"),
             backgroundColor: Colors.white,
             child: const Icon(
               Icons.note_add_rounded,
